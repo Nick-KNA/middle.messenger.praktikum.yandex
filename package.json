@@ -15,7 +15,7 @@
   "author": "Nick Koroid",
   "license": "ISC",
   "engines": {
-    "node": "14.17.4"
+    "node": ">=12"
   },
   "bugs": {
     "url": "https://github.com/Nick-KNA/middle.messenger.praktikum.yandex/issues"
