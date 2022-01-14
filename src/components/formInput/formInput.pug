@@ -1,0 +1,5 @@
+mixin form-input(name, labelText, placeholder, type='text')
+    .field.form-input
+        label.label.form-input__label= labelText
+        input.input.form-input__input(name=name placeholder=placeholder type=type pattern=type === 'tel' ? '' : undefined)
+        span.error.form-input__error(data-ref=name)

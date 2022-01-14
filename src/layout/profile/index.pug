@@ -1,0 +1,13 @@
+extends ../template/index
+include ../../components/profileField/profileField
+
+block content
+    .sidebar
+        img.sidebar__navigate-back(src="/static/back.svg" data-ref="navigate")
+    .profile
+        .profile__avatar
+            img(src="/static/defaultAvatar.svg")
+        h1.profile__title Иван
+        .profile__fields(data-ref="profileFields")
+            block profile-fields
+        block profile-actions

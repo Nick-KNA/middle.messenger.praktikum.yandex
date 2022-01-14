@@ -1,0 +1,4 @@
+mixin profileField(name, label, value, placeholder, type, disabled=true)
+    .profile-field
+        label.profile-field__label(data-ref=name)=label
+        input.input.profile-field__input(disabled=disabled placeholder=placeholder value=value name=name type=type)

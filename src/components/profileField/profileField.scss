@@ -1,0 +1,39 @@
+@import '../../styles/variables';
+
+.profile-field {
+  width: 100%;
+  max-width: 510px;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid $divider-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    flex: 1 1 40%;
+    font-size: 13px;
+    line-height: 13px;
+    color: $text-primary-color
+
+    &__label_error {
+      color: $error-color;
+    }
+  }
+  &__input {
+    flex: 1 1 60%;
+    font-size: 13px;
+    line-height: 13px;
+    color: $text-primary-color;
+    border: none;
+    height: 20px;
+    text-align: end;
+    color: $text-secondary-color;
+
+    &:disabled {
+      background-color: unset;
+    }
+  }
+}
