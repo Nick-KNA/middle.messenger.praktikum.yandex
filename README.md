@@ -1,4 +1,4 @@
-[Ссылка на пулл реквест](https://github.com/Nick-KNA/middle.messenger.praktikum.yandex/pull/1)
+[Ссылка на пулл реквест](https://github.com/Nick-KNA/middle.messenger.praktikum.yandex/pull/2)
 
 ### Ветка, в которой делаете задания спринта, должна называться sprint_i, где i - номер спринта. Не переименовывайте её.
 
