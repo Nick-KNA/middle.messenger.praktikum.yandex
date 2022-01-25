@@ -1,0 +1,22 @@
+@import '../../styles/variables';
+
+.profile-actions {
+  width: 100%;
+  max-width: 510px;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+
+  &__link {
+    text-decoration: none;
+    display: block;
+    font-size: 13px;
+    line-height: 13px;
+    padding: 10px 0;
+    border-bottom: 1px solid $divider-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}

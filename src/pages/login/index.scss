@@ -1,0 +1,56 @@
+@import "../../styles/common";
+
+.root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-form {
+  flex: 0 0 350px;
+  height: 450px;
+  min-height: 450px;
+  padding: 30px;
+
+  &__title {
+    margin: 20px 0 32px 0;
+    color: $text-primary-color;
+    font-size: 20px;
+    line-height: 20px;
+  }
+
+  &__messages {
+    margin-top: 16px;
+    min-height: 20px;
+
+    &__error {
+      font-size: 10px;
+      line-height: 10px;
+    }
+  }
+
+  &__actions {
+    margin-top: 85px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;;
+    align-items: center;
+
+    &__submit {
+      background-color: $main-color;
+      color: white;
+      width: 100%;
+      font-size: 13px;
+      line-height: 13px;
+      padding: 12px;
+    }
+
+    &__register {
+      margin-top: 14px;
+      font-size: 11px;
+      line-height: 11px;
+    }
+  }
+}
+
+

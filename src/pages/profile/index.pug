@@ -1,0 +1,17 @@
+extends ../../layout/profile/index
+
+append styles
+    link(rel='stylesheet' href='../../layout/profile/index.scss')
+    link(rel='stylesheet' href='../../components/profileField/profileField.scss')
+block profile-fields
+    +profileField('email', 'Почта', 'sample@yandex.ru', 'Укажите email', 'email')
+    +profileField('login', 'Логин', 'ivanivanov', 'Укажите логин', 'text')
+    +profileField('first_name', 'Имя', 'Иван', 'Укажите имя', 'text')
+    +profileField('second_name', 'Фамилия', 'Иванов', 'Укажите фамилию', 'text')
+    +profileField('nickname', 'Имя в чате', 'Иван', 'Укажите никнейм', 'text')
+    +profileField('phone', 'Телефон', '+79993334422', 'Укажите телефон', 'text')
+block profile-actions
+    .profile-actions
+        a.link.profile-actions__link(href='/profileEdit') Изменить данные
+        a.link.profile-actions__link(href='/passwordEdit') Изменить пароль
+        a.link_red.profile-actions__link(href='/login') Выйти
