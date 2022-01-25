@@ -10,8 +10,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #FBFBFB;
-  border-right: 1px solid #EAEAEA;
+  background-color: $white-background;
+  border-right: 1px solid $divider-color;
 
   &__navigate-back {
     width: 28px;
@@ -34,7 +34,7 @@
 
   &__avatar {
     border-radius: 90%;
-    background-color: #EFEFEF;
+    background-color: $white-background;
     width: 130px;
     height: 130px;
     overflow: hidden;

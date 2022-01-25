@@ -47,7 +47,7 @@ class RegisterForm extends Form {
 	fetchSubmitForm() {
 		const message = this.form.querySelector('span[data-ref="actionMessage"]');
 		const submitBtn = this.form.querySelector('button[type="submit"]');
-		if (! message || ! submitBtn) {
+		if (!message || !submitBtn) {
 			return;
 		}
 		submitBtn.classList.add('register-form__actions__submit_hidden');

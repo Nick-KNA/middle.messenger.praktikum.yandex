@@ -24,7 +24,7 @@ class BaseForm {
 	}
 	checkRequiredFields(){
 		return this.metadata.requiredFields.reduce((isValid, item) => {
-			const isNotEmpty = !! this.state[item.name];
+			const isNotEmpty = Boolean(this.state[item.name]);
 			if (! isNotEmpty) {
 				this.showInputError(item.name, `Не заполнено поле "${item.text}"`);
 			}
