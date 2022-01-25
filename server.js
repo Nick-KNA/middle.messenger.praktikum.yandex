@@ -6,6 +6,6 @@ const port = process.env.PORT || PORT;
 
 app.use(express.static(path.join(__dirname + '/dist')));
 
-app.listen(port, () => {
+app.listen(PORT, () => {
 	console.log(`Chat App server started on port ${port}!`);
 });
