@@ -4,13 +4,5 @@ include ../../components/formInput/formInput
 append styles
     link(rel='stylesheet' href='../../components/formInput/formInput.scss')
 
-block content
-    form.form.login-form(data-ref='loginForm')
-        h1.login-form__title Вход
-        +form-input('login', 'Логин', 'Введите свой логин')
-        +form-input('password', 'Пароль', 'Введите свой пароль', 'password')
-        .login-form__messages
-            span.error.login-form__messages__error(data-ref='loginFormError')
-        .login-form__actions
-            button.button.login-form__actions__submit(type='submit') Войти
-            a.link.login-form__actions__register(href='/register') Ещё не зарегистрированы?
+block scripts
+    script(src='./index.ts' type='module' defer="true")
