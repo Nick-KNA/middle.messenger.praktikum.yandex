@@ -5,6 +5,8 @@ import { v4 as uuid } from 'uuid';
 export type TChild = {
 	key: string
 	value: Block
+	constructor: TComponentConstructor<TProps, Block>
+	props: TProps
 };
 
 export type TListener = {
@@ -13,12 +15,28 @@ export type TListener = {
 	callback: (...args: any) => void
 }
 
-export type TProps = Record<string, any>;
+export type TComponentConstructor<T extends TProps, U extends Block> = (props: T) => U;
+
+export type TChildListener = {
+	prop: string
+	callbackRef: string
+}
+
+export type TChildren = {
+	[key: string]: {
+		component: TComponentConstructor<TProps, Block>, // constructor function, not an instance !!!
+		listeners: TChildListener[]
+		props: Record<string, any>
+	}
+}
+
+export type TProps = Record<string, any> & {
+	children?: TChildren
+};
 
 export type IMeta = {
 	tagName: string
 	props: TProps
-	children: TChild[]
 }
 
 const pugString = `
@@ -38,44 +56,61 @@ class Block {
 	_id: string;
 	_element: HTMLElement | null = null;
 	_meta: IMeta | null = null;
-	_eventBus: () => EventBus;
+	_eventBus: EventBus;
 	_templateRender: TCompileTemplate;
 	_listeners?: TListener[];
 
-	props: TProps;
+	props: TProps; /* self props */
+	childrenProps: {
+		[key: string]: TProps
+	}
 	children: TChild[];
 	proxyData: TProps
 
 	constructor(tagName = "div", props: TProps = {}) {
 		this._id = uuid();
 		this._templateRender = templateRender;
+		this.children = []
+		this.childrenProps = {};
+		
+		this._eventBus = new EventBus();
 
-		const eventBus = new EventBus();
-		const children = this._deriveChildren(props);
+		this._registerChildren(props);
 		this._meta = {
 			tagName,
 			props,
-			children,
 		};
 
 		this.props = this._makePropsProxy(props);
-		this.children = children;
 
-		this._eventBus = () => eventBus;
-
-		this._registerEvents(eventBus);
-		// eventBus.emit(Block.EVENTS.INIT);
+		this._registerEvents(this.eventBus);
+		this._registerListeners();
+		// this.eventBus.emit(Block.EVENTS.INIT); <--- run this in your component
 	}
 
-	_deriveChildren(props: TProps): TChild[] {
-		return Object.entries(props).filter((item: [string, any]): boolean => {
-			return item[1] instanceof Block;
-		}).map(([key, value]) => {
-			return {
-				key,
-				value
-			};
-		});
+	_registerChildren(props: TProps): void {
+		if (!props.children) {
+			return;
+		}
+		Object.entries(props.children).forEach(([key, value]) => {
+			const childProps = { ...value.props };
+			if (value.listeners && value.listeners.length > 0) {
+				value.listeners.forEach((listener) => {
+					const callback = this[listener.callbackRef as keyof Block];
+					if (callback && typeof callback === 'function') {
+						childProps[listener.prop] = callback.bind(this);
+					}
+				})
+			}
+			const component = value.component(childProps);
+			this.children.push({
+				key: key,
+				value: component,
+				constructor: value.component,
+				props: value.props
+			});
+			this.childrenProps[key] = component.getProps();
+		})
 	}
 
 	_registerEvents(eventBus: EventBus): void {
@@ -85,10 +120,15 @@ class Block {
 		eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
 	}
 
+	_registerListeners(): void {
+		this._listeners = [];
+	}
+
 	_addListners(): void {
 		if (!this._listeners) {
 			return;
 		}
+		console.log('adding listners');
 		this._listeners.forEach((item) => {
 			const element = !item.selector ? this.element : this.element.querySelector<Element>(item.selector);
 			if (!element) {
@@ -128,14 +168,18 @@ class Block {
 		this.eventBus.emit(Block.EVENTS.FLOW_CDM);
 	}
 
-	_componentDidMount() {
+	_componentDidMount(): void {
 		this.componentDidMount();
 	}
 
 	// add did mount logic of your component here
-	componentDidMount() {}
+	componentDidMount(): void {
+		
+	}
 
-	dispatchComponentDidMount() {}
+	dispatchComponentDidMount() {
+		this.componentDidMount();
+	}
 
 	_componentDidUpdate(oldProps: TProps, newProps: TProps): void {
 		const isUpdated = this.componentDidUpdate(oldProps, newProps);
@@ -153,6 +197,10 @@ class Block {
 		return oldKeys.reduce((acc, key) => {
 			return acc || oldProps[key] !== newProps[key];
 		}, false);
+	}
+
+	getProps = (): TProps => {
+		return this.props;
 	}
 
 	setProps = (nextProps: TProps): void => {
@@ -175,7 +223,7 @@ class Block {
 	}
 
 	get eventBus(): EventBus {
-		return this._eventBus();
+		return this._eventBus;
 	}
 
 	_render(): void {
@@ -204,6 +252,7 @@ class Block {
 				console.error(`Can\'t find stub with id ${item.value.id}`);
 				return;
 			}
+			// item.value.setProps(this.childrenProps[item.key]);
 			stub.replaceWith(item.value.getContent());
 		});
 
@@ -214,12 +263,13 @@ class Block {
 		return this.element;
 	}
 
-	_makePropsProxy(props: TProps): TProps {
+	_makePropsProxy(props: Record<string, any>): Record<string, any> {
+		const eventBus = this.eventBus;
 		this.proxyData = new Proxy(props, {
 			set(target: TProps, prop: keyof TProps, value: any): boolean {
 				const oldProps = {...target};
 				target[prop] = value;
-				this.eventBus.emit(Block.EVENTS.FLOW_CDU, oldProps, target);
+				eventBus.emit(Block.EVENTS.FLOW_CDU, oldProps, target);
 				return true;
 			},
 			get(target: TProps, prop: keyof TProps) {

@@ -5,19 +5,32 @@ const Validation = {
 		return plural(num, ['символ', 'символа', 'символов']);
 	},
 	validateRequired(value: string, name: string): string[] {
-		return this.validateRegExp(value, /^.+$/, `Не заполнено поле ${name}`);
+		const message = `Не заполнено поле ${name}`;
+		if(!value){
+			return [message];
+		}
+		return this.validateRegExp(value, /^.+$/, message);
 	},
 	validateMin(value: string, min: number): string[]   {
+		if(!value){
+			return [];
+		}
 		const isValid = value.length >= min;
 		return isValid ? [] : [`Должно быть минимум ${min} ${this.getMinMaxSymbolText(min)}`];
 	},
 	validateMax(value: string, max: number): string[]   {
+		if(!value){
+			return [];
+		}
 		const isValid = value.length <= max;
 		return isValid ? [] : [`Должно быть максимум ${max} ${this.getMinMaxSymbolText(max)}`];
 	},
-	validateRegExp(value: string, exp: RegExp, message: string): string[] {
+	validateRegExp(value: string, exp: RegExp, message?: string): string[] {
+		if(!value){
+			return [];
+		}
 		const isValid = exp.test(value || '');
-		return isValid ? [] : [message];
+		return isValid ? [] : [message || 'Значение не является валидным'];
 	},
 	validateLogin(value: string): string[] {
 		let result = this.validateRequired(value, 'Логин');
@@ -41,6 +54,11 @@ const Validation = {
 		result = result.concat(this.validateMax(value, 40));
 		return result;
 	},
+	validatePasswordRepeat(value: string, repeat: string): string[] {
+		let result = this.validateRequired(value, 'Пароль (еще раз)');
+		result = result.concat(value === repeat ? [] : ['Пароли не совпадают']);
+		return result;
+	},
 	validatePhone(value: string): string[] {
 		let result = this.validateRequired(value, 'Телефон');
 		result = result.concat(this.validateRegExp(value, /^\+?\d*$/, 'Телефон должен состоять из цифр'));
@@ -50,9 +68,31 @@ const Validation = {
 	},
 	validateEmail(value: string): string[] {
 		let result = this.validateRequired(value, 'Email');
-		result = result.concat(this.validateRegExp(value, /^(\w|-)+@(\w|-)+\.\w+$/, 'Невалидный email'));
+		result = result.concat(this.validateRegExp(value, /^(\w|-)+@(-|\w)*\w+\.\w+$/, 'Невалидный email'));
 		return result;
 	},
+	validateField(field: string, value: string, repeat?: string): string[] {
+		switch (field){
+			case 'email':
+				return this.validateEmail(value);
+			case 'login':
+				return this.validateLogin(value);
+			case 'first_name':
+				return this.validateName(value, 'Имя');
+			case 'second_name':
+				return this.validateName(value, 'Фамилия');
+			case 'phone':
+				return this.validatePhone(value);
+			case 'password':
+				return this.validatePassword(value);
+			case 'password_repeat':
+				return this.validatePasswordRepeat(value, repeat);
+			default:
+				return [];
+		}
+	}
 };
+
+export type TValidationMethods = keyof Omit<typeof Validation, 'getMinMaxSymbolText'>;
 
 export default Validation;

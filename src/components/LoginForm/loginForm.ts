@@ -1,7 +1,6 @@
 import BaseForm from '../baseForm/baseForm';
 import { compile as pugCompile } from 'pug';
 import Block, { TProps } from '../block/block';
-import Validation from '../../utils/validation';
 
 const pugString = `
 h1.login-form__title= title
@@ -19,13 +18,8 @@ const templateRender = pugCompile(pugString);
 class LoginForm extends BaseForm {
 	constructor(props: TProps) {
 		super(props);
-		this._registerListeners();
 		this._templateRender = templateRender;
 		this.eventBus.emit(Block.EVENTS.INIT);
-		this._initDepedentBlocks();
-	}
-	_initDepedentBlocks(): void{
-
 	}
 	_registerListeners():void {
 		this._listeners = [
@@ -33,18 +27,8 @@ class LoginForm extends BaseForm {
 				selector: '', //empty selector targets this_element itself
 				event: 'submit',
 				callback: this.onSubmitForm.bind(this)
-			},
-			{
-				selector: 'input[name="login"]',
-				event: 'change',
-				callback: this.onInputChange.bind(this)
-			},
-			{
-				selector: 'input[name="password"]',
-				event: 'change',
-				callback: this.onInputChange.bind(this)
 			}
-		]
+		];
 	}
 	_addAttributes(): void {
 		this.element.classList.add('form', 'login-form');
@@ -54,16 +38,16 @@ class LoginForm extends BaseForm {
 	validateForm(): string[]{
 		let messages: string[] = [];
 		console.log('valid');
-		messages = messages.concat(Validation.validateRequired(this.state.login, 'Логин'));
-		messages = messages.concat(Validation.validateRequired(this.state.password, 'Пароль'));
+		messages = messages.concat(this.validateRequiredField('login', 'Логин', this.state.login));
+		messages = messages.concat(this.validateRequiredField('password', 'Пароль', this.state.password));
 		return messages;
 	}
 	onSubmitForm(event: Event): void {
 		event.preventDefault();
+		console.log(this.state);
+		console.log('proceed submit');
 		const messages = this.validateForm();
 		if (messages.length > 0) {
-			const message = messages.join('\n');
-			this.showError(this.element.querySelector('span[data-ref="loginFormError"]') as HTMLElement, message, false);
 			return;
 		}
 		this.fetchSubmitForm();

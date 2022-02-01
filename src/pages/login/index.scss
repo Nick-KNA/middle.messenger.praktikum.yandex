@@ -43,6 +43,11 @@
       font-size: 13px;
       line-height: 13px;
       padding: 12px;
+
+      &_disabled {
+        filter: brightness(70%);
+        pointer-events: none;
+      }
     }
 
     &__register {

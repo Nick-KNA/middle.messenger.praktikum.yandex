@@ -1,4 +1,5 @@
-import Block, { TProps } from '../block/block';
+import Block, {TChildListener, TProps } from '../block/block';
+import Validation from '../../utils/validation';
 
 export type TFormState = Record<string, any>;
 export type TRequiredFieldMetadata = {
@@ -8,8 +9,13 @@ export type TRequiredFieldMetadata = {
 export type TFormMetadata = {
 	requiredFields: TRequiredFieldMetadata[]
 }
-export type TInputChangeEvent = {
+export type TInputEvent = {
 	target: HTMLInputElement
+}
+
+export type TValidationMeta = {
+	field: string
+	value: string
 }
 
 class BaseForm extends Block {
@@ -20,16 +26,28 @@ class BaseForm extends Block {
 	}
 	ERROR_CLASS = ''; // redefine
 	MESSAGE_TIMEOUT = 5000;
-	metadata: TFormMetadata = {
-		requiredFields: [
-			/* add required fields here in presented structure */
-			{ name: 'template', text: 'My template'}
-		]
+	onInputChange(event: TInputEvent): void {
+		console.log('input change');
+		const {
+			name,
+			value
+		} = event.target;
+		this.state[name] = value;
+		this.childrenProps[name].value = value;
+		this.showErrorField(name, Validation.validateField(name, value));
 	}
-	onInputChange(event: TInputChangeEvent): void {
-		const name = event.target.name;
-		this.state[name] = event.target.value;
-		this.clearInputError(event.target.name);
+	getSubmitButton(): HTMLElement {
+		return this.element.querySelector('button[type="submit"]') as HTMLElement;
+	}
+	onInputFocus(): void {
+		// add your logic here
+	}
+	onInputBlur(event: TInputEvent): void {
+		const {
+			name,
+			value
+		} = event.target;
+		this.showErrorField(name, Validation.validateField(name, value));
 	}
 	onSubmitForm(_event: Event): void {
 		//implement you submit logic here
@@ -39,14 +57,13 @@ class BaseForm extends Block {
 		/* add your custom validation logic of the fields value here, must return messages array (no messages == no errors) */
 		return messages;
 	}
-	checkRequiredFields(): boolean {
-		return this.metadata.requiredFields.reduce((isValid, item) => {
-			const isNotEmpty = Boolean(this.state[item.name]);
-			if (! isNotEmpty) {
-				this.showInputError(item.name, `Не заполнено поле "${item.text}"`);
-			}
-			return isValid && isNotEmpty;
-		}, true);
+	validateRequiredField(field: string, name: string, value: string): string[]{
+		const messages = Validation.validateRequired(value, name);
+		return this.showErrorField(field, messages);
+	}
+	showErrorField(field: string, messages: string[]): string[] {
+		this.childrenProps[field].error = messages.length > 0 ? messages.join('\n') : null;
+		return messages;
 	}
 	checkFieldValues(): boolean {
 		/* add your custom validation logic of the fields value here, must return boolean isValid */
@@ -69,11 +86,13 @@ class BaseForm extends Block {
 		element.innerText = '';
 		element.classList.remove(this.ERROR_CLASS);
 	}
-	clearInputError(_inputName: string): void{
-		//add clear input error logic here
-	}
-	showInputError(_name: string, _message: string){
-		//add show input error logic here
+	
+	static getInputListeners(): TChildListener[] {
+		return [
+			{ prop: 'onChange', callbackRef: 'onInputChange' },
+			{ prop: 'onFocus', callbackRef: 'onInputFocus' },
+			{ prop: 'onBlur', callbackRef: 'onInputBlur' }
+		];
 	}
 }
 

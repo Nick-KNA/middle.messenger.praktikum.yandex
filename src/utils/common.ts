@@ -12,3 +12,10 @@ export const plural = (num: number, text_forms: string[]): string => {
 	}
 	return text_forms[2];
 };
+
+export const dateToString = (date: Date): string => {
+	const day = '0' + date.getDate();
+	const month = '0' + (date.getMonth() + 1);
+	const year = date.getFullYear();
+	return `${day.slice(-2)}.${month.slice(-2)}.${year}`;
+};
