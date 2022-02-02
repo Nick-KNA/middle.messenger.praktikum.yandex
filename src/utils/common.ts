@@ -19,3 +19,12 @@ export const dateToString = (date: Date): string => {
 	const year = date.getFullYear();
 	return `${day.slice(-2)}.${month.slice(-2)}.${year}`;
 };
+
+export const dateTimeToString = (date: Date): string => {
+	const day = '0' + date.getDate();
+	const month = '0' + (date.getMonth() + 1);
+	const year = date.getFullYear();
+	const hours = '0' + date.getHours();
+	const minutes = '0' + date.getMinutes();
+	return `${day.slice(-2)}.${month.slice(-2)}.${year} ${hours.slice(-2)}:${minutes.slice(-2)}`;
+};

@@ -1,4 +1,4 @@
-import RegisterForm from '../../components/RegisterForm/registerForm';
+import RegisterForm from '../../components/registerForm/registerForm';
 import { constructFormInput } from '../../components/formInput/formInput';
 import { renderToDOM } from '../../utils/domUtils';
 

@@ -1,7 +1,9 @@
-extends ../../layout/template/index
+extends ../../layout/chats/index
 
+append styles
+    link(rel='stylesheet' href='../../layout/chats/index.scss')
+    link(rel='stylesheet' href='../../components/chatList/chatList.scss')
+    link(rel='stylesheet' href='../../components/chat/chat.scss')
+    link(rel='stylesheet' href='../../components/newMessage/newMessage.scss')
 block scripts
     script(src='./index.ts' type='module' defer="true")
-
-block content
-    div.chat-list
