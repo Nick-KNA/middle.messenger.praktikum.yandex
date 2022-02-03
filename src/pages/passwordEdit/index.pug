@@ -3,10 +3,4 @@ extends ../../layout/profile/index
 append styles
     link(rel='stylesheet' href='../../layout/profile/index.scss')
     link(rel='stylesheet' href='../../components/profileField/profileField.scss')
-block profile-fields
-    +profileField('old_password', 'Старый пароль', '', 'Введите старый пароль', 'password', false)
-    +profileField('new_password', 'Новый пароль', '', 'Введите новый пароль', 'password', false)
-    +profileField('new_password_repeat', 'Повторите новый пароль', '', 'Повторите новый пароль', 'password', false)
-block profile-actions
-    .profile-actions
-        button.button.profile-actions__save(data-ref='saveProfile') Сохранить
+    link(rel='stylesheet' href='../../components/navigateButton/navigateButton.scss')

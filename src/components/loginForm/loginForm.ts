@@ -1,6 +1,6 @@
 import BaseForm from '../baseForm/baseForm';
-import { compile as pugCompile } from 'pug';
-import Block, { TProps } from '../block/block';
+import { compile } from 'pug';
+import Block, {TCallback, TProps } from '../block/block';
 
 const pugString = `
 h1.login-form__title= title
@@ -13,11 +13,12 @@ h1.login-form__title= title
 	a.link.login-form__actions__register(href='/register') Ещё не зарегистрированы?
 `;
 
-const templateRender = pugCompile(pugString);
+const templateRender = compile(pugString);
 
 class LoginForm extends BaseForm {
 	constructor(props: TProps) {
 		super(props);
+		this.ERROR_CLASS = 'error_visible';
 		this._templateRender = templateRender;
 		this.eventBus.emit(Block.EVENTS.INIT);
 	}
@@ -26,7 +27,7 @@ class LoginForm extends BaseForm {
 			{
 				selector: '', //empty selector targets this_element itself
 				event: 'submit',
-				callback: this.onSubmitForm.bind(this)
+				callback: this.onSubmitForm.bind(this) as TCallback
 			}
 		];
 	}
@@ -34,26 +35,25 @@ class LoginForm extends BaseForm {
 		this.element.classList.add('form', 'login-form');
 		this.element.setAttribute('data-ref', 'loginForm');
 	}
-	ERROR_CLASS = 'error_visible';
 	validateForm(): string[]{
 		let messages: string[] = [];
-		console.log('valid');
 		messages = messages.concat(this.validateRequiredField('login', 'Логин', this.state.login));
 		messages = messages.concat(this.validateRequiredField('password', 'Пароль', this.state.password));
 		return messages;
 	}
 	onSubmitForm(event: Event): void {
 		event.preventDefault();
-		console.log(this.state);
-		console.log('proceed submit');
 		const messages = this.validateForm();
 		if (messages.length > 0) {
 			return;
 		}
 		this.fetchSubmitForm();
 	}
-	fetchSubmitForm(){
-		if (this.state.login !== 'ivanivanov') {
+	fetchSubmitForm(): void {
+		// TODO next spring add fetch logic and get rid of the hardcode
+		console.log('---------->Submit login<----------');
+		console.log(this.state);
+		if (this.state.login !== 'ivanivanov') { //<--- only ivanivanov with any password is valid combination
 			this.showError(this.element.querySelector('span[data-ref="loginFormError"]') as HTMLElement, 'Неверное сочетание логин / пароль', false);
 			return;
 		}

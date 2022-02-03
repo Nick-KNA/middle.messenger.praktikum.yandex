@@ -1,16 +1,13 @@
-import Block, {TChildListener, TProps } from '../block/block';
+import Block, { TProps } from '../block/block';
 import Validation from '../../utils/validation';
+import { TInputChangeEvent } from '../formInput/formInput';
 
-export type TFormState = Record<string, any>;
 export type TRequiredFieldMetadata = {
 	name: string
 	text: string
 }
 export type TFormMetadata = {
 	requiredFields: TRequiredFieldMetadata[]
-}
-export type TInputEvent = {
-	target: HTMLInputElement
 }
 
 export type TValidationMeta = {
@@ -19,15 +16,13 @@ export type TValidationMeta = {
 }
 
 class BaseForm extends Block {
-	state: TFormState
 	constructor(props: TProps) {
 		super('form', props);
-		this.state = {} as TFormState;
 	}
 	ERROR_CLASS = ''; // redefine
+	ERROR_JOIN = '\n';
 	MESSAGE_TIMEOUT = 5000;
-	onInputChange(event: TInputEvent): void {
-		console.log('input change');
+	onInputChange(event: TInputChangeEvent): void {
 		const {
 			name,
 			value
@@ -42,18 +37,19 @@ class BaseForm extends Block {
 	onInputFocus(): void {
 		// add your logic here
 	}
-	onInputBlur(event: TInputEvent): void {
+	onInputBlur(event: TInputChangeEvent): void {
 		const {
 			name,
 			value
 		} = event.target;
 		this.showErrorField(name, Validation.validateField(name, value));
 	}
-	onSubmitForm(_event: Event): void {
+	onSubmitForm(event: Event): void {
 		//implement you submit logic here
+		console.log('BaseForm onSubmitForm event', event);
 	}
 	validateForm(): string[]{
-		let messages: string[] = [];
+		const messages: string[] = [];
 		/* add your custom validation logic of the fields value here, must return messages array (no messages == no errors) */
 		return messages;
 	}
@@ -62,7 +58,7 @@ class BaseForm extends Block {
 		return this.showErrorField(field, messages);
 	}
 	showErrorField(field: string, messages: string[]): string[] {
-		this.childrenProps[field].error = messages.length > 0 ? messages.join('\n') : null;
+		this.childrenProps[field].error = messages.length > 0 ? messages.join(this.ERROR_JOIN) : null;
 		return messages;
 	}
 	checkFieldValues(): boolean {
@@ -86,13 +82,8 @@ class BaseForm extends Block {
 		element.innerText = '';
 		element.classList.remove(this.ERROR_CLASS);
 	}
-	
-	static getInputListeners(): TChildListener[] {
-		return [
-			{ prop: 'onChange', callbackRef: 'onInputChange' },
-			{ prop: 'onFocus', callbackRef: 'onInputFocus' },
-			{ prop: 'onBlur', callbackRef: 'onInputBlur' }
-		];
+	getStringValue(value: any): string {
+		return !value ? '' : String(value);
 	}
 }
 

@@ -1,6 +1,6 @@
 import BaseForm, { TValidationMeta } from '../baseForm/baseForm';
-import { compile as pugCompile } from 'pug';
-import Block, { TProps } from '../block/block';
+import { compile } from 'pug';
+import Block, {TCallback, TProps } from '../block/block';
 import Validation from '../../utils/validation';
 
 const pugString = `
@@ -20,7 +20,7 @@ h1.register-form__title= title
 	a.link.register-form__actions__register(href='/login') Войти
 `;
 
-const templateRender = pugCompile(pugString);
+const templateRender = compile(pugString);
 
 class RegisterForm extends BaseForm {
 	constructor(props: TProps) {
@@ -33,7 +33,7 @@ class RegisterForm extends BaseForm {
 			{
 				selector: '', //empty selector targets this_element itself
 				event: 'submit',
-				callback: this.onSubmitForm.bind(this)
+				callback: this.onSubmitForm.bind(this) as TCallback
 			}
 		];
 	}
@@ -44,12 +44,12 @@ class RegisterForm extends BaseForm {
 	ERROR_CLASS = 'error_visible';
 	getValidationMetadata(): TValidationMeta[] {
 		return [
-			{ field: 'email', value: this.state.email },
-			{ field: 'login', value: this.state.login },
-			{ field: 'first_name', value: this.state.first_name },
-			{ field: 'second_name', value: this.state.second_name },
-			{ field: 'phone', value: this.state.phone },
-			{ field: 'password', value: this.state.password },
+			{ field: 'email', value: this.getStringValue(this.state.email) },
+			{ field: 'login', value: this.getStringValue(this.state.login) },
+			{ field: 'first_name', value: this.getStringValue(this.state.first_name) },
+			{ field: 'second_name', value: this.getStringValue(this.state.second_name) },
+			{ field: 'phone', value: this.getStringValue(this.state.phone) },
+			{ field: 'password', value: this.getStringValue(this.state.password) },
 		]
 	}
 	validateForm(): string[]{
@@ -63,20 +63,16 @@ class RegisterForm extends BaseForm {
 	}
 	onSubmitForm(event: Event): void {
 		event.preventDefault();
-		console.log(this.state);
-		console.log('proceed submit');
 		const messages = this.validateForm();
 		if (messages.length > 0) {
 			return;
 		}
 		this.fetchSubmitForm();
 	}
-	fetchSubmitForm(){
-		if (this.state.login !== 'ivanivanov') {
-			this.showError(this.element.querySelector('span[data-ref="loginFormError"]') as HTMLElement, 'Неверное сочетание логин / пароль', false);
-			return;
-		}
-		window.location.pathname = 'chats';
+	fetchSubmitForm(): void {
+		console.log('--------->Submit register<--------');
+		console.log(this.state);
+		window.location.pathname = 'login';
 	}
 }
 

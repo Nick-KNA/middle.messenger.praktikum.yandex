@@ -14,17 +14,17 @@ export const plural = (num: number, text_forms: string[]): string => {
 };
 
 export const dateToString = (date: Date): string => {
-	const day = '0' + date.getDate();
-	const month = '0' + (date.getMonth() + 1);
-	const year = date.getFullYear();
+	const day = '0' + String(date.getDate());
+	const month = '0' + String((date.getMonth() + 1));
+	const year = String(date.getFullYear());
 	return `${day.slice(-2)}.${month.slice(-2)}.${year}`;
 };
 
 export const dateTimeToString = (date: Date): string => {
-	const day = '0' + date.getDate();
-	const month = '0' + (date.getMonth() + 1);
-	const year = date.getFullYear();
-	const hours = '0' + date.getHours();
-	const minutes = '0' + date.getMinutes();
+	const day = '0' + String(date.getDate());
+	const month = '0' + String((date.getMonth() + 1));
+	const year = String(date.getFullYear());
+	const hours = '0' + String(date.getHours());
+	const minutes = '0' + String(date.getMinutes());
 	return `${day.slice(-2)}.${month.slice(-2)}.${year} ${hours.slice(-2)}:${minutes.slice(-2)}`;
 };

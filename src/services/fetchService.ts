@@ -16,41 +16,38 @@ type TMethodOptions<T> = Omit<TOptions<T>, 'method'>;
 
 const DEFAULT_REQUEST_TIMEOUT = 5000;
 
-const FetchService = {
+class FetchService {
 	deriveTimeout<T>(options: TMethodOptions<T>): number {
 		return options.timeout || DEFAULT_REQUEST_TIMEOUT;
-	},
+	}
 	get<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
 			{ ...options, method: METHODS.GET },
 			this.deriveTimeout(options)
 		);
-	},
-
+	}
 	post<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
 			{ ...options, method: METHODS.POST },
 			this.deriveTimeout(options)
 		);
-	},
-
+	}
 	put<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
 			{ ...options, method: METHODS.PUT },
 			this.deriveTimeout(options)
 		);
-	},
-
+	}
 	delete<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
 			{ ...options, method: METHODS.DELETE },
 			this.deriveTimeout(options)
 		);
-	},
+	}
 	serializeData<T>(data: T): string {
 		try {
 			return JSON.stringify(data);
@@ -58,7 +55,7 @@ const FetchService = {
 			console.error('Failed to serialize data for request, got error', err);
 			return '';
 		}
-	},
+	}
 	request<T, U>(url: string, options : TOptions<T> = { method: METHODS.GET }, timeout: number): Promise<U> {
 		const {method, headers, data} = options;
 		return new Promise((resolve, reject) => {
@@ -68,7 +65,6 @@ const FetchService = {
 			if(method === METHODS.GET && data){
 				targetUrl += this.queryStringify(data);
 			}
-			console.log('targetUrl', targetUrl);
 			xhr.open(method, targetUrl);
 			headers && Object.keys(headers).forEach((header) => {
 				xhr.setRequestHeader(header, headers[header]);
@@ -88,16 +84,18 @@ const FetchService = {
 				xhr.send(this.serializeData(data));
 			}
 		});
-	},
+	}
 	queryStringify<T extends Record<string, any>>(data: T): string {
 		let isFirst = true;
 		return data && Object.keys(data).reduce((query, key) => {
-			query += (isFirst ? '?' : '&') + `${key}=${data[key]}`;
+			query += (isFirst ? '?' : '&') + `${key}=${String(data[key])}`;
 			isFirst = false;
 			return query;
 		}, '');
 	}
-};
+}
 
-export default FetchService;
+const fetchService = new FetchService();
+
+export default fetchService;
 

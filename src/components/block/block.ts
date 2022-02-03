@@ -9,10 +9,12 @@ export type TChild = {
 	props: TProps
 };
 
+export type TCallback = (...args: unknown[]) => void
+
 export type TListener = {
 	selector: string
 	event: string
-	callback: (...args: any) => void
+	callback: TCallback
 }
 
 export type TComponentConstructor<T extends TProps, U extends Block> = (props: T) => U;
@@ -33,6 +35,8 @@ export type TChildren = {
 export type TProps = Record<string, any> & {
 	children?: TChildren
 };
+
+export type TState = Record<string, any>;
 
 export type IMeta = {
 	tagName: string
@@ -61,6 +65,7 @@ class Block {
 	_listeners?: TListener[];
 
 	props: TProps; /* self props */
+	state: TState;
 	childrenProps: {
 		[key: string]: TProps
 	}
@@ -72,7 +77,8 @@ class Block {
 		this._templateRender = templateRender;
 		this.children = []
 		this.childrenProps = {};
-		
+		this.state = {};
+
 		this._eventBus = new EventBus();
 
 		this._registerChildren(props);
@@ -98,7 +104,7 @@ class Block {
 				value.listeners.forEach((listener) => {
 					const callback = this[listener.callbackRef as keyof Block];
 					if (callback && typeof callback === 'function') {
-						childProps[listener.prop] = callback.bind(this);
+						childProps[listener.prop] = callback.bind(this) as TCallback;
 					}
 				})
 			}
@@ -111,6 +117,12 @@ class Block {
 			});
 			this.childrenProps[key] = component.getProps();
 		})
+	}
+
+	_childrenPropsToState(): void {
+		Object.entries(this.childrenProps).forEach(([key, value]) => {
+			this.state[key] = String(value.value);
+		});
 	}
 
 	_registerEvents(eventBus: EventBus): void {
@@ -128,7 +140,6 @@ class Block {
 		if (!this._listeners) {
 			return;
 		}
-		console.log('adding listners');
 		this._listeners.forEach((item) => {
 			const element = !item.selector ? this.element : this.element.querySelector<Element>(item.selector);
 			if (!element) {
@@ -171,13 +182,12 @@ class Block {
 	_componentDidMount(): void {
 		this.componentDidMount();
 	}
-
-	// add did mount logic of your component here
+	
 	componentDidMount(): void {
-		
+		// add did mount logic of your component here
 	}
 
-	dispatchComponentDidMount() {
+	dispatchComponentDidMount(): void {
 		this.componentDidMount();
 	}
 
@@ -249,7 +259,7 @@ class Block {
 		this.children.forEach((item: TChild): void => {
 			const stub = fragment.content.querySelector(`[data-stub-id="${item.value.id}"]`);
 			if (!stub) {
-				console.error(`Can\'t find stub with id ${item.value.id}`);
+				console.error(`Can't find stub with id ${item.value.id}`);
 				return;
 			}
 			// item.value.setProps(this.childrenProps[item.key]);
@@ -263,20 +273,20 @@ class Block {
 		return this.element;
 	}
 
-	_makePropsProxy(props: Record<string, any>): Record<string, any> {
+	_makePropsProxy(props: Record<string, string | number>): Record<string, string | number> {
 		const eventBus = this.eventBus;
 		this.proxyData = new Proxy(props, {
-			set(target: TProps, prop: keyof TProps, value: any): boolean {
+			set(target: TProps, prop: keyof TProps, value: string): boolean {
 				const oldProps = {...target};
 				target[prop] = value;
 				eventBus.emit(Block.EVENTS.FLOW_CDU, oldProps, target);
 				return true;
 			},
-			get(target: TProps, prop: keyof TProps) {
-				const value = target[prop];
-				return typeof value === "function" ? value.bind(target) : value;
+			get(target: TProps, prop: keyof TProps): TProps[keyof TProps] {
+				const value = target[prop] as string | number | TChildren;
+				return value;
 			},
-			deleteProperty(_target: TProps, _prop: keyof TProps) {
+			deleteProperty() {
 				throw new Error('нет доступа');
 			},
 		});
@@ -296,6 +306,14 @@ class Block {
 	hide(): void {
 		const element = this.getContent();
 		element.style.display = "none";
+	}
+
+	static getInputListeners(): TChildListener[] {
+		return [
+			{ prop: 'onChange', callbackRef: 'onInputChange' },
+			{ prop: 'onFocus', callbackRef: 'onInputFocus' },
+			{ prop: 'onBlur', callbackRef: 'onInputBlur' }
+		];
 	}
 }
 

@@ -1,5 +1,5 @@
 import Block, { TProps } from '../block/block';
-import { compile as pugCompile } from 'pug';
+import { compile } from 'pug';
 import { dateToString } from '../../utils/common';
 import { ChatListMock } from '../../utils/mockData';
 
@@ -13,9 +13,9 @@ const image = new URL('../../../static/images/chatAvatar.svg', import.meta.url);
 
 const pugString = `
 each val in chats
-	li.chat-list__chats__item
+	li.chat-list__chats__item(data-selected= val.id === selectedChat ? 'true' : 'false')
 		div.chat-list__chats__item__avatar
-			img.chat-list__chats__item__avatar__image(src="${image}")
+			img.chat-list__chats__item__avatar__image(src="${image.toString()}")
 		div.chat-list__chats__item__content
 			span= val.name
 			span= val.lastMessage
@@ -26,7 +26,7 @@ each val in chats
 					span= val.newMessages
 `;
 
-const templateRender = pugCompile(pugString);
+const templateRender = compile(pugString);
 
 class ChatList extends Block {
 	constructor(props?: TProps) {

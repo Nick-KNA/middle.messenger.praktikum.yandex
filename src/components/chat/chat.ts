@@ -1,5 +1,5 @@
 import Block, { TProps } from '../block/block';
-import { compile as pugCompile } from 'pug';
+import { compile } from 'pug';
 import { ChatListMock } from '../../utils/mockData';
 import { dateTimeToString } from '../../utils/common';
 
@@ -16,10 +16,10 @@ if !selectedChat
 else
 	.chat__header
 		div.chat__header__avatar
-			img.chat__header__avatar__image(src="${image}")
+			img.chat__header__avatar__image(src="${image.toString()}")
 		span.chat__header__name= chatName
 	.chat__content
-		for val in messages
+		each val in messages
 			if val.isYourMessage
 				.chat-message.chat-message_your
 					+message(val.text, val.time)
@@ -29,7 +29,7 @@ else
 						
 `;
 
-const templateRender = pugCompile(pugString);
+const templateRender = compile(pugString);
 
 class Chat extends Block {
 	constructor(props?: TProps) {
@@ -43,7 +43,7 @@ class Chat extends Block {
 		this.eventBus.emit(Block.EVENTS.INIT);
 	}
 
-	_addAttributes() {
+	_addAttributes(): void {
 		this.element.classList.add('chat');
 	}
 

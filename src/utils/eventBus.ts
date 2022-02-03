@@ -1,4 +1,4 @@
-export type TCallback = (...args: any[]) => void;
+export type TCallback = (...args: unknown[]) => void;
 export type TListners = Record<string, TCallback[]>;
 
 class EventBus {
@@ -25,7 +25,7 @@ class EventBus {
 		);
 	}
 
-	emit(event: string, ...args: any[]): void {
+	emit(event: string, ...args: unknown[]): void {
 		if (!this.listeners[event]) {
 			throw new Error(`Нет события: ${event}`);
 		}

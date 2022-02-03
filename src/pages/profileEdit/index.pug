@@ -3,13 +3,4 @@ extends ../../layout/profile/index
 append styles
     link(rel='stylesheet' href='../../layout/profile/index.scss')
     link(rel='stylesheet' href='../../components/profileField/profileField.scss')
-block profile-fields
-    +profileField('email', 'Почта', 'sample@yandex.ru', 'Укажите email', 'email', false)
-    +profileField('login', 'Логин', 'ivanivanov', 'Укажите логин', 'text', false)
-    +profileField('first_name', 'Имя', 'Иван', 'Укажите имя', 'text', false)
-    +profileField('second_name', 'Фамилия', 'Иванов', 'Укажите фамилию', 'text', false)
-    +profileField('nickname', 'Имя в чате', 'Иван', 'Укажите никнейм', 'text', false)
-    +profileField('phone', 'Телефон', '+79993334422', 'Укажите телефон', 'text', false)
-block profile-actions
-    .profile-actions
-        button.button.profile-actions__save(data-ref='saveProfile') Сохранить
+    link(rel='stylesheet' href='../../components/navigateButton/navigateButton.scss')

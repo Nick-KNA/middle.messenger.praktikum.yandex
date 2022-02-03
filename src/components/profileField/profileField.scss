@@ -1,12 +1,12 @@
-@import '../../styles/variables';
+@import "../../styles/variables";
 
 .profile-field {
   width: 100%;
   max-width: 510px;
   display: flex;
   align-items: center;
-  padding: 10px 0;
   border-bottom: 1px solid $divider-color;
+  position: relative;
 
   &:last-child {
     border-bottom: none;
@@ -14,19 +14,21 @@
 
   &__label {
     flex: 1 1 40%;
+    padding: 10px 0;
     font-size: 13px;
     line-height: 13px;
-    color: $text-primary-color
+    color: $text-primary-color;
 
     &__label_error {
       color: $error-color;
     }
   }
+
   &__input {
     flex: 1 1 60%;
+    padding: 10px 0;
     font-size: 13px;
     line-height: 13px;
-    color: $text-primary-color;
     border: none;
     height: 20px;
     text-align: end;
@@ -35,5 +37,14 @@
     &:disabled {
       background-color: unset;
     }
+  }
+
+  &__error {
+    position: absolute;
+    bottom: 1px;
+    left: 0;
+    font-size: 9px;
+    line-height: 9px;
+    color: $error-color;
   }
 }
