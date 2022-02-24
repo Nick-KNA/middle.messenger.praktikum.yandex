@@ -1,4 +1,4 @@
-[Ссылка на пулл реквест](https://github.com/Nick-KNA/middle.messenger.praktikum.yandex/pull/3)
+[Ссылка на пулл реквест](https://github.com/Nick-KNA/middle.messenger.praktikum.yandex/pull/4)
 
 ### Приложение ChatApp (Учебный проект Яндекс.Практикум)
 Веб приложение для общения
