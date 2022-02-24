@@ -1,7 +1,7 @@
-extends ../../layout/template/index
+extends ../../layout/chats/index
 
-block scripts
-block content
-    p Future chats page welcomes you
-    p We are sorry, but this page is under construction, will be happy to see you in the next sprint
-    a.link(href='/') return to index
+append styles
+    link(rel='stylesheet' href='../../layout/chats/index.scss')
+    link(rel='stylesheet' href='../../components/chatList/chatList.scss')
+    link(rel='stylesheet' href='../../components/chat/chat.scss')
+    link(rel='stylesheet' href='../../components/newMessage/newMessage.scss')

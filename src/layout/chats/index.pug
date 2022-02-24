@@ -1,0 +1,16 @@
+extends ../template/index
+
+block content
+    .chat-list
+        .chat-list__to-profile
+            a.link.chat-list__to-profile__link(href='/profile') Профиль
+                img.chat-list__to-profile__link__next(src='../../../static/images/arrowNext.svg')
+        .chat-list__search
+            input.chat-list__search__input(placeholder='Поиск')
+        .chat-list__chats
+            block chats-list
+    .chat-area
+        .chat-area__messages
+            block chat-messages
+        .chat-area__new-message
+            block chat-mew-message

@@ -3,20 +3,3 @@ include ../../components/formInput/formInput
 
 append styles
     link(rel='stylesheet' href='../../components/formInput/formInput.scss')
-
-block content
-    form.form.register-form(data-ref='registerForm')
-        h1.register-form__title Регистрация
-        +form-input('email', 'Почта', 'Введите свой e-mail', 'email')
-        +form-input('login', 'Логин', 'Введите желаемый логин')
-        +form-input('first_name', 'Имя', 'Укажите свое имя')
-        +form-input('second_name', 'Фамилия', 'Укажите свою фамилию')
-        +form-input('phone', 'Телефон', 'Укажите свой телефон, например +79991112233')
-        +form-input('password', 'Пароль', 'Введите пароль', 'password')
-        +form-input('password_repeat', 'Пароль (ещё раз)', 'Введите пароль еще раз', 'password')
-        .register-form__messages
-            span.error.register-form__messages__error(data-ref='registerFormError')
-        .register-form__actions
-            button.button.register-form__actions__submit(type='submit') Создать аккаунт
-            span.register-form__actions__message(data-ref='actionMessage') Пользователь создан
-            a.link.register-form__actions__register(href='/login') Войти

@@ -1,0 +1,29 @@
+@import "../../styles/variables";
+
+.new-message {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-top: 1px solid $divider-color;
+
+  &__input {
+    flex: 1 1 auto;
+    border: none;
+    background-color: $secondary-background;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 12px;
+    line-height: 12px;
+  }
+
+  &__send {
+    flex: 0 0 38px;
+    padding-left: 10px;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 80%;
+    }
+  }
+}

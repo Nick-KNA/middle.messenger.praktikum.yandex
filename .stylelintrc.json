@@ -1,0 +1,14 @@
+{
+  "extends": "stylelint-config-standard-scss",
+  "plugins": [
+    "stylelint-scss"
+  ],
+  "rules": {
+    "color-hex-case": "lower"
+  },
+  "ignoreFiles": [
+    "build/*",
+    "node_modules",
+    "dist/**/*.css"
+  ]
+}
