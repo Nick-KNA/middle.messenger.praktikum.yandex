@@ -1,6 +1,6 @@
 import { compile } from 'pug';
 import BaseForm from '../baseForm/baseForm';
-import Block, { TProps } from '../block/block';
+import Block, { TComponentConstructor, TProps } from "../block/block"
 
 const image = new URL('../../../static/images/defaultAvatar.svg', import.meta.url);
 
@@ -33,5 +33,7 @@ class Profile extends BaseForm {
 		this.element.classList.add('profile');
 	}
 }
+
+export const constructProfile: TComponentConstructor<TProps, Profile> = (props: TProps): Profile => new Profile(props);
 
 export default Profile;

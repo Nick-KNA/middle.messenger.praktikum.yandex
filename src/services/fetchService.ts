@@ -14,9 +14,18 @@ type TOptions<T> = {
 
 type TMethodOptions<T> = Omit<TOptions<T>, 'method'>;
 
+export type TResponse<T> = {
+	status: boolean,
+	data: T
+};
+
 const DEFAULT_REQUEST_TIMEOUT = 5000;
 
 class FetchService {
+	private baseUrl: string;
+	constructor(baseUrl: string) {
+		this.baseUrl = baseUrl;
+	}
 	deriveTimeout<T>(options: TMethodOptions<T>): number {
 		return options.timeout || DEFAULT_REQUEST_TIMEOUT;
 	}
@@ -56,12 +65,21 @@ class FetchService {
 			return '';
 		}
 	}
-	request<T, U>(url: string, options : TOptions<T> = { method: METHODS.GET }, timeout: number): Promise<U> {
+	deserializeData<T>(jsonString: string): T | null {
+		try {
+			return JSON.parse(jsonString);
+		} catch (err) {
+			console.error('Failed to deserialize data for request, got error', err);
+			return null;
+		}
+	}
+	request<T, U>(url: string, options : TOptions<T> = { method: METHODS.GET }, timeout: number): Promise<TResponse<U | null>> {
 		const {method, headers, data} = options;
+		const self = this;
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			xhr.timeout = timeout;
-			let targetUrl = url;
+			let targetUrl = this.baseUrl + url;
 			if(method === METHODS.GET && data){
 				targetUrl += this.queryStringify(data);
 			}
@@ -71,7 +89,10 @@ class FetchService {
 			});
 
 			xhr.onload = function() {
-				resolve(xhr.response);
+				resolve({
+					status: xhr.status === 200,
+					data: self.deserializeData(xhr.response),
+				});
 			};
 
 			xhr.onabort = reject;
@@ -95,7 +116,7 @@ class FetchService {
 	}
 }
 
-const fetchService = new FetchService();
+const fetchService = new FetchService('https://ya-praktikum.tech/api/v2');
 
 export default fetchService;
 

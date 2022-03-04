@@ -1,6 +1,5 @@
 import LoginForm from '../../components/loginForm/loginForm';
 import { constructFormInput } from '../../components/formInput/formInput';
-import { renderToDOM } from '../../utils/domUtils';
 
 const loginForm = new LoginForm({
 	title: 'Вход',
@@ -32,7 +31,6 @@ const loginForm = new LoginForm({
 	}
 });
 
-renderToDOM('.root', loginForm);
-
+export default loginForm;
 
 

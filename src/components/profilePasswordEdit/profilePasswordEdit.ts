@@ -1,6 +1,6 @@
 import BaseForm, { TValidationMeta } from '../baseForm/baseForm';
 import { compile } from 'pug';
-import Block, {TCallback, TProps } from '../block/block';
+import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import Validation from '../../utils/validation';
 
 const image = new URL('../../../static/images/defaultAvatar.svg', import.meta.url);
@@ -68,5 +68,8 @@ class ProfilePasswordEdit extends BaseForm {
 		window.location.pathname = 'profile';
 	}
 }
+
+export const constructProfilePasswordEdit: TComponentConstructor<TProps, ProfilePasswordEdit> =
+	(props: TProps): ProfilePasswordEdit => new ProfilePasswordEdit(props);
 
 export default ProfilePasswordEdit;

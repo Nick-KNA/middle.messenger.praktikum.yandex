@@ -1,6 +1,12 @@
 import BaseForm from '../baseForm/baseForm';
 import { compile } from 'pug';
 import Block, {TCallback, TProps } from '../block/block';
+import authService from "../../services/authService"
+import { Router } from "../../utils/router"
+import { TResponse } from "../../services/fetchService"
+import { TInputChangeEvent } from "../formInput/formInput"
+
+const router = new Router();
 
 const pugString = `
 h1.login-form__title= title
@@ -20,6 +26,7 @@ class LoginForm extends BaseForm {
 		super(props);
 		this.ERROR_CLASS = 'error_visible';
 		this._templateRender = templateRender;
+		this._isFlex = true;
 		this.eventBus.emit(Block.EVENTS.INIT);
 	}
 	_registerListeners():void {
@@ -28,18 +35,39 @@ class LoginForm extends BaseForm {
 				selector: '', //empty selector targets this_element itself
 				event: 'submit',
 				callback: this.onSubmitForm.bind(this) as TCallback
-			}
+			},
+			{
+				selector: 'a.login-form__actions__register',
+				event: 'click',
+				callback: this.onRegister.bind(this) as TCallback
+			},
 		];
 	}
 	_addAttributes(): void {
 		this.element.classList.add('form', 'login-form');
 		this.element.setAttribute('data-ref', 'loginForm');
 	}
+	onInputChange(event: TInputChangeEvent): void {
+		const {
+			name,
+			value
+		} = event.target;
+		this.state[name] = value;
+		this.childrenProps[name].value = value;
+		this.childrenProps[name].error = '';
+	}
+	onInputBlur(): void {
+		// redefine since no additional validation required
+	}
 	validateForm(): string[]{
 		let messages: string[] = [];
 		messages = messages.concat(this.validateRequiredField('login', 'Логин', this.state.login));
 		messages = messages.concat(this.validateRequiredField('password', 'Пароль', this.state.password));
 		return messages;
+	}
+	onRegister(event: Event): void {
+		event.preventDefault();
+		this.router.go('/register');
 	}
 	onSubmitForm(event: Event): void {
 		event.preventDefault();
@@ -53,11 +81,22 @@ class LoginForm extends BaseForm {
 		// TODO next spring add fetch logic and get rid of the hardcode
 		console.log('---------->Submit login<----------');
 		console.log(this.state);
-		if (this.state.login !== 'ivanivanov') { //<--- only ivanivanov with any password is valid combination
-			this.showError(this.element.querySelector('span[data-ref="loginFormError"]') as HTMLElement, 'Неверное сочетание логин / пароль', false);
-			return;
-		}
-		window.location.pathname = 'chats';
+		authService.login(this.state.login, this.state.password).then(
+			(response: TResponse<any>): void => {
+				if (!response.status) {
+					this.showFormMessage(response.data.reason);
+					return;
+				}
+				router.go('/chats');
+			},
+			(error: any): void => {
+				console.log(error);
+				this.showFormMessage('Сервис временно недоступен, попробуйте позже');
+			}
+		)
+	}
+	showFormMessage(message: string): void {
+		this.showError(document.querySelector('[data-ref="loginFormError"]'), message, false);
 	}
 }
 

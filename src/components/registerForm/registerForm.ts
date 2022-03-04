@@ -17,7 +17,7 @@ h1.register-form__title= title
 .register-form__actions
 	button.button.register-form__actions__submit(type='submit') Создать аккаунт
 	span.register-form__actions__message(data-ref='actionMessage') Пользователь создан
-	a.link.register-form__actions__register(href='/login') Войти
+	a.link.register-form__actions__login(href='/login') Войти
 `;
 
 const templateRender = compile(pugString);
@@ -26,6 +26,7 @@ class RegisterForm extends BaseForm {
 	constructor(props: TProps) {
 		super(props);
 		this._templateRender = templateRender;
+		this._isFlex = true;
 		this.eventBus.emit(Block.EVENTS.INIT);
 	}
 	_registerListeners():void {
@@ -34,7 +35,12 @@ class RegisterForm extends BaseForm {
 				selector: '', //empty selector targets this_element itself
 				event: 'submit',
 				callback: this.onSubmitForm.bind(this) as TCallback
-			}
+			},
+			{
+				selector: 'a.register-form__actions__login',
+				event: 'click',
+				callback: this.onLogin.bind(this) as TCallback
+			},
 		];
 	}
 	_addAttributes(): void {
@@ -73,6 +79,10 @@ class RegisterForm extends BaseForm {
 		console.log('--------->Submit register<--------');
 		console.log(this.state);
 		window.location.pathname = 'login';
+	}
+	onLogin(event: Event): void {
+		event.preventDefault();
+		this.router.go('/login');
 	}
 }
 

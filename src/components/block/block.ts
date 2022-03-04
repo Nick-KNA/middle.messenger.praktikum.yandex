@@ -1,6 +1,7 @@
 import EventBus from '../../utils/eventBus';
 import { compile as pugCompile, compileTemplate as TCompileTemplate } from 'pug';
 import { v4 as uuid } from 'uuid';
+import { Router } from '../../utils/router';
 
 export type TChild = {
 	key: string
@@ -51,10 +52,10 @@ const templateRender = pugCompile(pugString);
 
 class Block {
 	static EVENTS = {
-		INIT: "init",
-		FLOW_CDM: "flow:component-did-mount",
-		FLOW_CDU: "flow:component-did-update",
-		FLOW_RENDER: "flow:render"
+		INIT: 'init',
+		FLOW_CDM: 'flow:component-did-mount',
+		FLOW_CDU: 'flow:component-did-update',
+		FLOW_RENDER: 'flow:render'
 	};
 
 	_id: string;
@@ -63,7 +64,9 @@ class Block {
 	_eventBus: EventBus;
 	_templateRender: TCompileTemplate;
 	_listeners?: TListener[];
+	_isFlex: boolean;
 
+	router: Router;
 	props: TProps; /* self props */
 	state: TState;
 	childrenProps: {
@@ -72,12 +75,14 @@ class Block {
 	children: TChild[];
 	proxyData: TProps
 
-	constructor(tagName = "div", props: TProps = {}) {
+	constructor(tagName = 'div', props: TProps = {}) {
+		this.router = new Router();
 		this._id = uuid();
 		this._templateRender = templateRender;
 		this.children = []
 		this.childrenProps = {};
 		this.state = {};
+		this._isFlex = false;
 
 		this._eventBus = new EventBus();
 
@@ -182,7 +187,7 @@ class Block {
 	_componentDidMount(): void {
 		this.componentDidMount();
 	}
-	
+
 	componentDidMount(): void {
 		// add did mount logic of your component here
 	}
@@ -217,11 +222,7 @@ class Block {
 		if (!nextProps) {
 			return;
 		}
-		const oldProps = {
-			...this.props,
-		}
 		Object.assign(this.props, nextProps);
-		this.eventBus.emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
 	};
 
 	get id(): string {
@@ -300,12 +301,12 @@ class Block {
 
 	show(): void {
 		const element = this.getContent();
-		element.style.display = "block";
+		element.style.display = this._isFlex ? 'flex' : 'block';
 	}
 
 	hide(): void {
 		const element = this.getContent();
-		element.style.display = "none";
+		element.style.display = 'none';
 	}
 
 	static getInputListeners(): TChildListener[] {

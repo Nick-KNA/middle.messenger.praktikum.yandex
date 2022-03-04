@@ -1,5 +1,5 @@
 import { compile } from 'pug';
-import Block, {TCallback, TProps } from '../block/block';
+import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import BaseForm, { TValidationMeta } from '../baseForm/baseForm';
 import Validation from '../../utils/validation';
 
@@ -74,5 +74,7 @@ class ProfileEdit extends BaseForm {
 		window.location.pathname = 'profile';
 	}
 }
+
+export const constructProfileEdit: TComponentConstructor<TProps, ProfileEdit> = (props: TProps): ProfileEdit => new ProfileEdit(props);
 
 export default ProfileEdit;

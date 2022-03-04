@@ -1,13 +1,5 @@
-@import "../../styles/common";
-
-.root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .login-form {
-  flex: 0 0 350px;
+  width: 350px;
   height: 450px;
   min-height: 450px;
   padding: 30px;

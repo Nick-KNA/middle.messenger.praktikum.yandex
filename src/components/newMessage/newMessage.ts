@@ -1,4 +1,4 @@
-import Block, {TCallback, TProps } from '../block/block';
+import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import { compile } from 'pug';
 import { TInputChangeEvent } from '../formInput/formInput';
 import Validation from '../../utils/validation';
@@ -70,11 +70,13 @@ class NewMessage extends Block {
 			this.resetState();
 		}
 	}
-	
+
 	resetState(): void {
 		this.props.value = '';
 		this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
 	}
 }
+
+export const constructNewMessage: TComponentConstructor<TProps, NewMessage> = (): NewMessage => new NewMessage();
 
 export default NewMessage;

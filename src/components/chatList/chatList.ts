@@ -1,4 +1,4 @@
-import Block, { TProps } from '../block/block';
+import Block, { TComponentConstructor, TProps } from "../block/block"
 import { compile } from 'pug';
 import { dateToString } from '../../utils/common';
 import { ChatListMock } from '../../utils/mockData';
@@ -52,5 +52,7 @@ class ChatList extends Block {
 		this.props.selectedChat = ChatListMock[0].id;
 	}
 }
+
+export const constructChatList: TComponentConstructor<TProps, ChatList> = (): ChatList => new ChatList();
 
 export default ChatList;

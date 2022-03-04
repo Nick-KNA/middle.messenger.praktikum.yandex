@@ -1,6 +1,6 @@
 import RegisterForm from '../../components/registerForm/registerForm';
 import { constructFormInput } from '../../components/formInput/formInput';
-import { renderToDOM } from '../../utils/domUtils';
+// import { renderToDOM } from '../../utils/domUtils';
 
 const registerForm = new RegisterForm({
 	title: 'Регистрация',
@@ -91,5 +91,5 @@ const registerForm = new RegisterForm({
 		}
 	}
 });
-
-renderToDOM('.root', registerForm);
+// renderToDOM('.root', registerForm);
+export default registerForm;
