@@ -1,8 +1,10 @@
 @import "../../styles/variables";
 
-.root {
+.chat-wrapper {
   display: flex;
   padding: 0;
+  flex: 1 1 auto;
+  width: 100%;
 }
 
 .chat-list {
@@ -53,6 +55,18 @@
   &__chats {
     flex: 1 1 auto;
     overflow-y: auto;
+  }
+
+  &__new-chat {
+    flex: 0 0 35px;
+    padding: 10px;
+
+    &__add {
+      width: 100%;
+      background-color: $main-color;
+      color: white;
+      padding: 10px;
+    }
   }
 }
 

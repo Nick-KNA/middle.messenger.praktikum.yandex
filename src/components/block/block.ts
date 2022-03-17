@@ -1,6 +1,7 @@
 import EventBus from '../../utils/eventBus';
 import { compile as pugCompile, compileTemplate as TCompileTemplate } from 'pug';
 import { v4 as uuid } from 'uuid';
+import { Router } from '../../utils/router';
 
 export type TChild = {
 	key: string
@@ -51,10 +52,12 @@ const templateRender = pugCompile(pugString);
 
 class Block {
 	static EVENTS = {
-		INIT: "init",
-		FLOW_CDM: "flow:component-did-mount",
-		FLOW_CDU: "flow:component-did-update",
-		FLOW_RENDER: "flow:render"
+		INIT: 'init',
+		FLOW_CDM: 'flow:component-did-mount',
+		FLOW_CDU: 'flow:component-did-update',
+		FLOW_CWS: 'flow:component-was-shown',
+		FLOW_CWH: 'flow:component-was-hidden',
+		FLOW_RENDER: 'flow:render'
 	};
 
 	_id: string;
@@ -63,7 +66,9 @@ class Block {
 	_eventBus: EventBus;
 	_templateRender: TCompileTemplate;
 	_listeners?: TListener[];
+	_isFlex: boolean;
 
+	router: Router;
 	props: TProps; /* self props */
 	state: TState;
 	childrenProps: {
@@ -72,12 +77,14 @@ class Block {
 	children: TChild[];
 	proxyData: TProps
 
-	constructor(tagName = "div", props: TProps = {}) {
+	constructor(tagName = 'div', props: TProps = {}) {
+		this.router = new Router();
 		this._id = uuid();
 		this._templateRender = templateRender;
 		this.children = []
 		this.childrenProps = {};
 		this.state = {};
+		this._isFlex = false;
 
 		this._eventBus = new EventBus();
 
@@ -119,9 +126,13 @@ class Block {
 		})
 	}
 
+	getChildComponent(key: string): TChild | null {
+		return this.children.find((item: TChild): boolean => item.key === key) || null;
+	}
+
 	_childrenPropsToState(): void {
 		Object.entries(this.childrenProps).forEach(([key, value]) => {
-			this.state[key] = String(value.value);
+			this.state[key] = String(value.value || '') || null;
 		});
 	}
 
@@ -130,6 +141,8 @@ class Block {
 		eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
 		eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
 		eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+		eventBus.on(Block.EVENTS.FLOW_CWS, this.componentWasShown.bind(this));
+		eventBus.on(Block.EVENTS.FLOW_CWH, this.componentWasHidden.bind(this));
 	}
 
 	_registerListeners(): void {
@@ -141,12 +154,13 @@ class Block {
 			return;
 		}
 		this._listeners.forEach((item) => {
-			const element = !item.selector ? this.element : this.element.querySelector<Element>(item.selector);
-			if (!element) {
-				console.error(`No element found with this selector: ${item.selector}`);
+			const elements = !item.selector ? [this.element] : this.element.querySelectorAll<Element>(item.selector);
+			if (elements.length === 0) {
 				return;
 			}
-			element.addEventListener(item.event, item.callback);
+			elements.forEach((elem) => {
+				elem.addEventListener(item.event, item.callback);
+			});
 		});
 	}
 
@@ -155,11 +169,13 @@ class Block {
 			return;
 		}
 		this._listeners.forEach((item) => {
-			const element = !item.selector ? this.element : this.element.querySelector<Element>(item.selector);
-			if (!element) {
+			const elements = !item.selector ? [this.element] : this.element.querySelectorAll<Element>(item.selector);
+			if (!elements.length) {
 				return;
 			}
-			element.removeEventListener(item.event, item.callback);
+			elements.forEach((elem) => {
+				elem.removeEventListener(item.event, item.callback);
+			});
 		});
 	}
 
@@ -182,7 +198,7 @@ class Block {
 	_componentDidMount(): void {
 		this.componentDidMount();
 	}
-	
+
 	componentDidMount(): void {
 		// add did mount logic of your component here
 	}
@@ -192,13 +208,14 @@ class Block {
 	}
 
 	_componentDidUpdate(oldProps: TProps, newProps: TProps): void {
-		const isUpdated = this.componentDidUpdate(oldProps, newProps);
+		const isUpdated = this.shouldComponentUpdate(oldProps, newProps);
 		if (isUpdated) {
+			this.componentDidUpdate();
 			this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
 		}
 	}
 
-	componentDidUpdate(oldProps: TProps, newProps: TProps): boolean {
+	shouldComponentUpdate(oldProps: TProps, newProps: TProps): boolean {
 		const oldKeys = Object.keys(oldProps);
 		const newKeys = Object.keys(newProps);
 		if(oldKeys.length !== newKeys.length) {
@@ -209,6 +226,18 @@ class Block {
 		}, false);
 	}
 
+	componentDidUpdate(): void {
+		// add did update logic of your component here
+	}
+
+	componentWasShown(): void {
+		// add logic for when component was shown
+	}
+
+	componentWasHidden(): void {
+		// add logic for when component was hidden
+	}
+
 	getProps = (): TProps => {
 		return this.props;
 	}
@@ -217,11 +246,7 @@ class Block {
 		if (!nextProps) {
 			return;
 		}
-		const oldProps = {
-			...this.props,
-		}
 		Object.assign(this.props, nextProps);
-		this.eventBus.emit(Block.EVENTS.FLOW_CDU, oldProps, this.props);
 	};
 
 	get id(): string {
@@ -300,12 +325,20 @@ class Block {
 
 	show(): void {
 		const element = this.getContent();
-		element.style.display = "block";
+		element.style.display = this._isFlex ? 'flex' : 'block';
+		this.eventBus.emit(Block.EVENTS.FLOW_CWS);
+		this.children.forEach((child) => {
+			child.value.eventBus.emit(Block.EVENTS.FLOW_CWS);
+		});
 	}
 
 	hide(): void {
 		const element = this.getContent();
-		element.style.display = "none";
+		element.style.display = 'none';
+		this.eventBus.emit(Block.EVENTS.FLOW_CWH);
+		this.children.forEach((child) => {
+			child.value.eventBus.emit(Block.EVENTS.FLOW_CWH);
+		});
 	}
 
 	static getInputListeners(): TChildListener[] {

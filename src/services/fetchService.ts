@@ -1,3 +1,5 @@
+import { Router } from "../utils/router"
+
 export enum METHODS {
 	GET = "GET",
 	POST = "POST",
@@ -14,9 +16,19 @@ type TOptions<T> = {
 
 type TMethodOptions<T> = Omit<TOptions<T>, 'method'>;
 
+export type TResponse<T> = {
+	status: boolean,
+	data: T
+};
+
 const DEFAULT_REQUEST_TIMEOUT = 5000;
 
 class FetchService {
+	private baseUrl: string;
+	private router: Router;
+	constructor(baseUrl: string) {
+		this.baseUrl = baseUrl;
+	}
 	deriveTimeout<T>(options: TMethodOptions<T>): number {
 		return options.timeout || DEFAULT_REQUEST_TIMEOUT;
 	}
@@ -30,14 +42,14 @@ class FetchService {
 	post<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
-			{ ...options, method: METHODS.POST },
+			{ ...options, method: METHODS.POST, headers: { ...options.headers, 'Content-Type': 'application/json' } },
 			this.deriveTimeout(options)
 		);
 	}
 	put<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
-			{ ...options, method: METHODS.PUT },
+			{ ...options, method: METHODS.PUT, headers: { ...options.headers, 'Content-Type': 'application/json' } },
 			this.deriveTimeout(options)
 		);
 	}
@@ -56,12 +68,20 @@ class FetchService {
 			return '';
 		}
 	}
-	request<T, U>(url: string, options : TOptions<T> = { method: METHODS.GET }, timeout: number): Promise<U> {
+	deserializeData<T>(jsonString: string): T | null {
+		try {
+			return JSON.parse(jsonString) as T;
+		} catch (err) {
+			return null;
+		}
+	}
+	request<T, U>(url: string, options : TOptions<T> = { method: METHODS.GET }, timeout: number): Promise<TResponse<U | null>> {
 		const {method, headers, data} = options;
+		const self = this;
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			xhr.timeout = timeout;
-			let targetUrl = url;
+			let targetUrl = this.baseUrl + url;
 			if(method === METHODS.GET && data){
 				targetUrl += this.queryStringify(data);
 			}
@@ -69,9 +89,21 @@ class FetchService {
 			headers && Object.keys(headers).forEach((header) => {
 				xhr.setRequestHeader(header, headers[header]);
 			});
+			xhr.withCredentials = true;
 
-			xhr.onload = function() {
-				resolve(xhr.response);
+			xhr.onload = () => {
+				if (xhr.status === 401 || xhr.status === 403) {
+					if (!this.router) {
+						this.router = new Router();
+					}
+					setTimeout(() => {
+						this.router.go('/login');
+					}, 300);
+				}
+				resolve({
+					status: xhr.status === 200,
+					data: self.deserializeData(xhr.response),
+				});
 			};
 
 			xhr.onabort = reject;
@@ -95,7 +127,7 @@ class FetchService {
 	}
 }
 
-const fetchService = new FetchService();
+const fetchService = new FetchService('https://ya-praktikum.tech/api/v2');
 
 export default fetchService;
 

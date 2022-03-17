@@ -65,7 +65,7 @@ class BaseForm extends Block {
 		/* add your custom validation logic of the fields value here, must return boolean isValid */
 		return true;
 	}
-	showError(element: HTMLElement, message: string, shouldPersist: boolean): void {
+	showError(element: HTMLElement | null, message: string, shouldPersist: boolean): void {
 		if (!element){
 			return;
 		}

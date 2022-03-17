@@ -1,56 +1,66 @@
-import NavigateButton from '../../components/navigateButton/navigateButton';
+import { constructNavigateButton } from "../../components/navigateButton/navigateButton";
 import { constructProfileField } from '../../components/profileField/profileField';
-import ProfilePasswordEdit from '../../components/profilePasswordEdit/profilePasswordEdit';
-import { renderToDOM } from '../../utils/domUtils';
+import ProfilePasswordEdit, { constructProfilePasswordEdit } from "../../components/profilePasswordEdit/profilePasswordEdit";
+import { ProfilePage } from "../profile/index";
 
-const profilePasswordEdit = new ProfilePasswordEdit({
-	title: 'Иван',
+const profilePasswordEdit = new ProfilePage({
 	children: {
-		old_password: {
-			component: constructProfileField,
-			listeners: ProfilePasswordEdit.getInputListeners(),
+		navigateBack: {
+			component: constructNavigateButton,
+			listeners: [],
 			props: {
-				value: '',
-				labelText: 'Старый пароль',
-				name: 'old_password',
-				placeholder: 'Введите старый пароль',
-				error: '',
-				type: 'password',
-				disabled: false
+				targetPath: '/profile'
 			}
 		},
-		password: {
-			component: constructProfileField,
-			listeners: ProfilePasswordEdit.getInputListeners(),
+		profile: {
+			component: constructProfilePasswordEdit,
+			listeners: [],
 			props: {
-				value: '',
-				labelText: 'Новый пароль',
-				name: 'password',
-				placeholder: 'Введите новый пароль',
-				error: '',
-				type: 'password',
-				disabled: false
-			}
-		},
-		password_repeat: {
-			component: constructProfileField,
-			listeners: ProfilePasswordEdit.getInputListeners(),
-			props: {
-				value: '',
-				labelText: 'Повторите новый пароль',
-				name: 'password_repeat',
-				placeholder: 'Повторите новый пароль',
-				error: '',
-				type: 'password',
-				disabled: false
+				title: 'Иван',
+				children: {
+					old_password: {
+						component: constructProfileField,
+						listeners: ProfilePasswordEdit.getInputListeners(),
+						props: {
+							value: '',
+							labelText: 'Старый пароль',
+							name: 'old_password',
+							placeholder: 'Введите старый пароль',
+							error: '',
+							type: 'password',
+							disabled: false
+						}
+					},
+					password: {
+						component: constructProfileField,
+						listeners: ProfilePasswordEdit.getInputListeners(),
+						props: {
+							value: '',
+							labelText: 'Новый пароль',
+							name: 'password',
+							placeholder: 'Введите новый пароль',
+							error: '',
+							type: 'password',
+							disabled: false
+						}
+					},
+					password_repeat: {
+						component: constructProfileField,
+						listeners: ProfilePasswordEdit.getInputListeners(),
+						props: {
+							value: '',
+							labelText: 'Повторите новый пароль',
+							name: 'password_repeat',
+							placeholder: 'Повторите новый пароль',
+							error: '',
+							type: 'password',
+							disabled: false
+						}
+					}
+				}
 			}
 		}
 	}
 });
 
-const navigateBack = new NavigateButton({
-	targetPath: 'profile'
-});
-
-renderToDOM('.root', profilePasswordEdit);
-renderToDOM('.sidebar', navigateBack);
+export default profilePasswordEdit;

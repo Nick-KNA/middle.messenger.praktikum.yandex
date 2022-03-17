@@ -1,5 +1,8 @@
-import Block, {TCallback, TProps } from '../block/block';
+import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import { compile } from 'pug';
+import { Router } from "../../utils/router"
+
+const router = new Router();
 
 const image = new URL('../../../static/images/back.svg', import.meta.url);
 
@@ -25,9 +28,11 @@ class NavigateButton extends Block {
 		];
 	}
 	onNavigateClick(): void {
-		window.location.pathname = String(this.props.targetPath);
+		router.go(this.props.targetPath);
 	}
 }
+
+export const constructNavigateButton: TComponentConstructor<TProps, NavigateButton> = (props: TProps): NavigateButton => new NavigateButton(props);
 
 export default NavigateButton;
 

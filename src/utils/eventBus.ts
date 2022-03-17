@@ -17,7 +17,7 @@ class EventBus {
 
 	off(event: string, callback: TCallback): void {
 		if (!this.listeners[event]) {
-			throw new Error(`Нет события: ${event}`);
+			return;
 		}
 
 		this.listeners[event] = this.listeners[event].filter(
@@ -25,9 +25,17 @@ class EventBus {
 		);
 	}
 
+	clear(event: string): void {
+		this.listeners[event] = [];
+	}
+
+	clearAll(): void {
+		Object.keys(this.listeners).forEach(this.clear.bind(this));
+	}
+
 	emit(event: string, ...args: unknown[]): void {
 		if (!this.listeners[event]) {
-			throw new Error(`Нет события: ${event}`);
+			return;
 		}
 
 		this.listeners[event].forEach(function(listener) {

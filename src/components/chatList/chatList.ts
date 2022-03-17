@@ -1,29 +1,35 @@
-import Block, { TProps } from '../block/block';
+import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import { compile } from 'pug';
-import { dateToString } from '../../utils/common';
-import { ChatListMock } from '../../utils/mockData';
+import { chatsState, EStoreEvents, IChat, IChatsState } from "../../store/index";
+import chatsService from "../../services/chatsService";
+import { TResponse } from "../../services/fetchService";
+import { Router } from "../../utils/router";
+import { parseDate } from "../../utils/common"
+
+const router = new Router();
 
 export type TChatListProps = {
 	onChangeSelectedChat: (selectedChat: string) => void
 }
 
-const MAX_TEXT_LENGTH = 40;
-
 const image = new URL('../../../static/images/chatAvatar.svg', import.meta.url);
 
 const pugString = `
-each val in chats
-	li.chat-list__chats__item(data-selected= val.id === selectedChat ? 'true' : 'false')
+if state.list.length === 0
+	li.chat-list_empty
+		span Список пуст
+each val in state.list
+	li.chat-list__chats__item(data-selected= val.id === selectedChat ? 'true' : 'false' data-chatId= val.id)
 		div.chat-list__chats__item__avatar
 			img.chat-list__chats__item__avatar__image(src="${image.toString()}")
 		div.chat-list__chats__item__content
-			span= val.name
-			span= val.lastMessage
+			span= val.title
+			span= ! val.last_message ? '-' : val.last_message.content
 		div.chat-list__chats__item__marks
-			span= val.lastMessageTime
+			span= ! val.last_message ? '-' : val.last_message.time
 			div.chat-list__chats__item__marks__new-messages
-				if val.newMessages > 0
-					span= val.newMessages
+				if val.unread_count > 0
+					span= val.unread_count
 `;
 
 const templateRender = compile(pugString);
@@ -32,25 +38,64 @@ class ChatList extends Block {
 	constructor(props?: TProps) {
 		super('ul', {
 			...props,
-			selectedChat: '',
-			chats: []
+			state: chatsState.getState()
 		});
+		chatsState.on(EStoreEvents.Updated, this.updatePropsFromStore.bind(this));
 		this._templateRender = templateRender;
 		this.eventBus.emit(Block.EVENTS.INIT);
 	}
-	componentDidMount(): void {
-		// add fetch request logic next sprint, now using mock data
-		this.props.chats = ChatListMock.map((item) => {
-			return {
-				id: item.id,
-				name: item.name,
-				lastMessageTime: dateToString(item.lastMessage.time),
-				lastMessage: item.lastMessage.text.length > MAX_TEXT_LENGTH ? (item.lastMessage.text.slice(0, MAX_TEXT_LENGTH) + '...') : item.lastMessage.text,
-				newMessages: item.newMessages
-			};
+	_registerListeners():void {
+		this._listeners = [
+			{
+				selector: '[data-chatid]',
+				event: 'click',
+				callback: this.onChatSelected.bind(this) as TCallback
+			},
+		];
+	}
+	updatePropsFromStore(state: IChatsState): void {
+		this.props.state = {
+			...state
+		};
+	}
+	componentWasShown() {
+		this.fetchChatsList();
+	}
+	fetchChatsList(): void {
+		// there has to be a web socket to update chat list with new messages, no such API found
+		chatsService.fetchChatsList().then(
+			(response: TResponse<IChat[]>): void => {
+				if (!response.status) {
+					router.go('/500');
+					return;
+				}
+				const oldState =chatsState.getState();
+				response.data.forEach((chat) => {
+					if (chat.last_message) {
+						chat.last_message.time = parseDate(chat.last_message.time);
+					}
+				})
+				chatsState.setState({
+					selected: oldState.selected,
+					list: response.data
+				});
+			},
+			(error: any): void => {
+				console.log(error);
+				router.go('/500');
+			}
+		)
+	}
+	onChatSelected(event: Event): void {
+		const target = event.currentTarget as HTMLElement;
+		const oldState =chatsState.getState();
+		chatsState.setState({
+			selected: target.dataset.chatid || '',
+			list: oldState.list
 		});
-		this.props.selectedChat = ChatListMock[0].id;
 	}
 }
+
+export const constructChatList: TComponentConstructor<TProps, ChatList> = (): ChatList => new ChatList();
 
 export default ChatList;
