@@ -20,6 +20,11 @@ export const dateToString = (date: Date): string => {
 	return `${day.slice(-2)}.${month.slice(-2)}.${year}`;
 };
 
+export const parseDate = (dateString: string): string => {
+	const date = new Date(dateString);
+	return dateToString(date);
+}
+
 export const dateTimeToString = (date: Date): string => {
 	const day = '0' + String(date.getDate());
 	const month = '0' + String((date.getMonth() + 1));
@@ -28,6 +33,11 @@ export const dateTimeToString = (date: Date): string => {
 	const minutes = '0' + String(date.getMinutes());
 	return `${day.slice(-2)}.${month.slice(-2)}.${year} ${hours.slice(-2)}:${minutes.slice(-2)}`;
 };
+
+export const parseDateTime = (dateString: string): string => {
+	const date = new Date(dateString);
+	return dateTimeToString(date);
+}
 
 export const set = (object: Record<string, any>, path: string, value: unknown): Record<string, any> => {
 	if (typeof object !== 'object' || Array.isArray(object)) {

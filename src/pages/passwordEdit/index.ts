@@ -9,7 +9,7 @@ const profilePasswordEdit = new ProfilePage({
 			component: constructNavigateButton,
 			listeners: [],
 			props: {
-				targetPath: '/chats'
+				targetPath: '/profile'
 			}
 		},
 		profile: {

@@ -55,6 +55,8 @@ class Block {
 		INIT: 'init',
 		FLOW_CDM: 'flow:component-did-mount',
 		FLOW_CDU: 'flow:component-did-update',
+		FLOW_CWS: 'flow:component-was-shown',
+		FLOW_CWH: 'flow:component-was-hidden',
 		FLOW_RENDER: 'flow:render'
 	};
 
@@ -124,9 +126,13 @@ class Block {
 		})
 	}
 
+	getChildComponent(key: string): TChild | null {
+		return this.children.find((item: TChild): boolean => item.key === key) || null;
+	}
+
 	_childrenPropsToState(): void {
 		Object.entries(this.childrenProps).forEach(([key, value]) => {
-			this.state[key] = String(value.value);
+			this.state[key] = String(value.value || '') || null;
 		});
 	}
 
@@ -135,6 +141,8 @@ class Block {
 		eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
 		eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
 		eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+		eventBus.on(Block.EVENTS.FLOW_CWS, this.componentWasShown.bind(this));
+		eventBus.on(Block.EVENTS.FLOW_CWH, this.componentWasHidden.bind(this));
 	}
 
 	_registerListeners(): void {
@@ -146,12 +154,13 @@ class Block {
 			return;
 		}
 		this._listeners.forEach((item) => {
-			const element = !item.selector ? this.element : this.element.querySelector<Element>(item.selector);
-			if (!element) {
-				console.error(`No element found with this selector: ${item.selector}`);
+			const elements = !item.selector ? [this.element] : this.element.querySelectorAll<Element>(item.selector);
+			if (elements.length === 0) {
 				return;
 			}
-			element.addEventListener(item.event, item.callback);
+			elements.forEach((elem) => {
+				elem.addEventListener(item.event, item.callback);
+			});
 		});
 	}
 
@@ -160,11 +169,13 @@ class Block {
 			return;
 		}
 		this._listeners.forEach((item) => {
-			const element = !item.selector ? this.element : this.element.querySelector<Element>(item.selector);
-			if (!element) {
+			const elements = !item.selector ? [this.element] : this.element.querySelectorAll<Element>(item.selector);
+			if (!elements.length) {
 				return;
 			}
-			element.removeEventListener(item.event, item.callback);
+			elements.forEach((elem) => {
+				elem.removeEventListener(item.event, item.callback);
+			});
 		});
 	}
 
@@ -197,13 +208,14 @@ class Block {
 	}
 
 	_componentDidUpdate(oldProps: TProps, newProps: TProps): void {
-		const isUpdated = this.componentDidUpdate(oldProps, newProps);
+		const isUpdated = this.shouldComponentUpdate(oldProps, newProps);
 		if (isUpdated) {
+			this.componentDidUpdate();
 			this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
 		}
 	}
 
-	componentDidUpdate(oldProps: TProps, newProps: TProps): boolean {
+	shouldComponentUpdate(oldProps: TProps, newProps: TProps): boolean {
 		const oldKeys = Object.keys(oldProps);
 		const newKeys = Object.keys(newProps);
 		if(oldKeys.length !== newKeys.length) {
@@ -212,6 +224,18 @@ class Block {
 		return oldKeys.reduce((acc, key) => {
 			return acc || oldProps[key] !== newProps[key];
 		}, false);
+	}
+
+	componentDidUpdate(): void {
+		// add did update logic of your component here
+	}
+
+	componentWasShown(): void {
+		// add logic for when component was shown
+	}
+
+	componentWasHidden(): void {
+		// add logic for when component was hidden
 	}
 
 	getProps = (): TProps => {
@@ -302,11 +326,19 @@ class Block {
 	show(): void {
 		const element = this.getContent();
 		element.style.display = this._isFlex ? 'flex' : 'block';
+		this.eventBus.emit(Block.EVENTS.FLOW_CWS);
+		this.children.forEach((child) => {
+			child.value.eventBus.emit(Block.EVENTS.FLOW_CWS);
+		});
 	}
 
 	hide(): void {
 		const element = this.getContent();
 		element.style.display = 'none';
+		this.eventBus.emit(Block.EVENTS.FLOW_CWH);
+		this.children.forEach((child) => {
+			child.value.eventBus.emit(Block.EVENTS.FLOW_CWH);
+		});
 	}
 
 	static getInputListeners(): TChildListener[] {

@@ -8,7 +8,7 @@ import profilePage from "./profile/index"
 import profileEditPage from "./profileEdit/index"
 import profilePasswordEdit from "./passwordEdit/index"
 
-const DEFAULT_PATH = '/register';
+const DEFAULT_PATH = '/chats';
 
 const router = new Router();
 const path = window.location.pathname;

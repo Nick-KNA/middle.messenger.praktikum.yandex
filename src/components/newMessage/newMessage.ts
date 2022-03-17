@@ -2,13 +2,18 @@ import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import { compile } from 'pug';
 import { TInputChangeEvent } from '../formInput/formInput';
 import Validation from '../../utils/validation';
+import wsService from "../../services/wsService";
+import { chatsState, EStoreEvents } from "../../store/index";
 
 const image = new URL('../../../static/images/next.svg', import.meta.url);
 
 const pugString = `
-input.new-message__input(name="message" data-ref="sendMessageInput" placeholder="Сообщение" value= value)
-.new-message__send(data-ref="sendMessage")
-	img(src="${image.toString()}")
+if !chatsState.selected
+	
+else
+	input.new-message__input(name="message" data-ref="sendMessageInput" placeholder="Сообщение" value= value)
+	.new-message__send(data-ref="sendMessage")
+		img(src="${image.toString()}")
 `
 
 const templateRender = compile(pugString);
@@ -18,7 +23,9 @@ class NewMessage extends Block {
 		super('div', {
 			...props,
 			value: '',
+			chatsState: chatsState.getState()
 		});
+		chatsState.on(EStoreEvents.Updated, this.updatePropsFromState.bind(this));
 		this._templateRender = templateRender;
 		this.eventBus.emit(Block.EVENTS.INIT);
 	}
@@ -42,8 +49,15 @@ class NewMessage extends Block {
 		]
 	}
 
+	updatePropsFromState(): void {
+		const currentState = chatsState.getState();
+		this.props.chatsState = {
+			...currentState
+		};
+	}
+
 	//custom implementation to turn off rerender for the input value change, since the DOM is already synced with our props.value
-	componentDidUpdate(oldProps: TProps, newProps: TProps): boolean {
+	shouldComponentUpdate(oldProps: TProps, newProps: TProps): boolean {
 		const oldKeys = Object.keys(oldProps);
 		const newKeys = Object.keys(newProps);
 		if(oldKeys.length !== newKeys.length) {
@@ -66,7 +80,10 @@ class NewMessage extends Block {
 		if (messages.length === 0) {
 			console.log('--------->Sending message<--------');
 			console.log(this.props.value);
-			// TODO next sprint: add fetch new message logic here
+			wsService.sendMessage(JSON.stringify({
+				content: String(this.props.value),
+				type: 'message'
+			}));
 			this.resetState();
 		}
 	}

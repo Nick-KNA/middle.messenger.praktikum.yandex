@@ -2,6 +2,8 @@ import BaseForm, { TValidationMeta } from '../baseForm/baseForm';
 import { compile } from 'pug';
 import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import Validation from '../../utils/validation';
+import { TResponse } from "../../services/fetchService"
+import userService from "../../services/userService"
 
 const image = new URL('../../../static/images/defaultAvatar.svg', import.meta.url);
 
@@ -62,10 +64,22 @@ class ProfilePasswordEdit extends BaseForm {
 		return messages;
 	}
 	fetchSubmitForm(): void {
-		// add fetch save profile logic here
-		console.log('----------->Save password<--------');
-		console.log(this.state);
-		window.location.pathname = 'profile';
+		void userService.changePassword({
+			oldPassword: String(this.state.old_password),
+			newPassword: String(this.state.password)
+		}).then(
+			(response: TResponse<any>) => {
+				if (!response.status) {
+					this.router.go('/500');
+					return;
+				}
+				this.router.go('/profile');
+			},
+			() => {
+				this.router.go('/500');
+			}
+		);
+
 	}
 }
 

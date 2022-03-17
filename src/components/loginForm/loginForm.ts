@@ -5,6 +5,7 @@ import authService from "../../services/authService"
 import { Router } from "../../utils/router"
 import { TResponse } from "../../services/fetchService"
 import { TInputChangeEvent } from "../formInput/formInput"
+import { SERVICE_UNAVAILABLE, UNKNOWN_ERROR } from "../../utils/constants"
 
 const router = new Router();
 
@@ -82,16 +83,16 @@ class LoginForm extends BaseForm {
 		console.log('---------->Submit login<----------');
 		console.log(this.state);
 		authService.login(this.state.login, this.state.password).then(
-			(response: TResponse<any>): void => {
+			(response: TResponse<Record<string, any>>): void => {
 				if (!response.status) {
-					this.showFormMessage(response.data.reason);
+					this.showFormMessage(response.data.reason || UNKNOWN_ERROR);
 					return;
 				}
 				router.go('/chats');
 			},
 			(error: any): void => {
 				console.log(error);
-				this.showFormMessage('Сервис временно недоступен, попробуйте позже');
+				this.showFormMessage(SERVICE_UNAVAILABLE);
 			}
 		)
 	}

@@ -72,6 +72,10 @@ class Validation {
 		result = result.concat(this.validateRegExp(value, /^(\w|-)+@(-|\w)*\w+\.\w+$/, 'Невалидный email'));
 		return result;
 	}
+	validateDisplayName(value: string): string[] {
+		const result = this.validateRequired(value, 'Никнейм');
+		return result;
+	}
 	validateField(field: string, value: string, repeat?: string): string[] {
 		switch (field){
 			case 'email':
@@ -84,6 +88,8 @@ class Validation {
 				return this.validateName(value, 'Фамилия');
 			case 'phone':
 				return this.validatePhone(value);
+			case 'display_name':
+				return this.validateDisplayName(value);
 			case 'password':
 				return this.validatePassword(value);
 			case 'password_repeat':

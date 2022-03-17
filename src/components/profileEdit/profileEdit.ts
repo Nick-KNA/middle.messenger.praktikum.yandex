@@ -2,6 +2,9 @@ import { compile } from 'pug';
 import Block, { TCallback, TComponentConstructor, TProps } from "../block/block"
 import BaseForm, { TValidationMeta } from '../baseForm/baseForm';
 import Validation from '../../utils/validation';
+import authService from "../../services/authService"
+import userService from "../../services/userService"
+import { TResponse } from "../../services/fetchService"
 
 const image = new URL('../../../static/images/defaultAvatar.svg', import.meta.url);
 
@@ -14,7 +17,7 @@ h1.profile__title= title
 	!= login
 	!= first_name
 	!= second_name
-	!= nickname
+	!= display_name
 	!= phone
 .profile-actions
 	button.button.profile-actions__save(data-ref='saveProfile') Сохранить
@@ -57,6 +60,7 @@ class ProfileEdit extends BaseForm {
 			{ field: 'first_name', value: this.getStringValue(this.state.first_name) },
 			{ field: 'second_name', value: this.getStringValue(this.state.second_name)},
 			{ field: 'phone', value: this.getStringValue(this.state.phone) },
+			{ field: 'display_name', value: this.getStringValue(this.state.display_name) },
 		]
 	}
 	validateFields(): string[] {
@@ -68,10 +72,36 @@ class ProfileEdit extends BaseForm {
 		return messages;
 	}
 	fetchSubmitForm(): void {
-		// add fetch save profile logic here
-		console.log('----------->Save profile<---------');
-		console.log(this.state);
-		window.location.pathname = 'profile';
+		userService.changeUser(this.state).then(
+			(response: TResponse<any>) => {
+				if (!response.status) {
+					this.router.go('/500');
+					return;
+				}
+				this.router.go('/profile');
+			},
+			() => {
+				this.router.go('/500');
+			}
+		)
+
+	}
+	componentWasShown(): void {
+		void authService.me().then(
+			(data) => {
+				if (! data) {
+					return;
+				}
+				console.log(data);
+				this.childrenProps.email.value = data.email;
+				this.childrenProps.login.value = data.login;
+				this.childrenProps.first_name.value = data.first_name;
+				this.childrenProps.second_name.value = data.second_name;
+				this.childrenProps.display_name.value = data.display_name;
+				this.childrenProps.phone.value = data.phone;
+				this._childrenPropsToState();
+			}
+		)
 	}
 }
 

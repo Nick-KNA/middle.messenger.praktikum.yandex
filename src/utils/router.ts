@@ -10,12 +10,13 @@ const ROOT_QUERY = '.root';
 export class Route {
 	private _pathname: string;
 	private _block: Block;
+	private _isRendered: boolean
 
 	constructor(pathname: string, block: Block) {
 		this._pathname = pathname;
 		this._block = block;
+		this._isRendered = false;
 		block.hide();
-		renderToDOM(ROOT_QUERY, block);
 	}
 
 	navigate(pathname: string) {
@@ -35,6 +36,10 @@ export class Route {
 	}
 
 	render() {
+		if (!this._isRendered) {
+			renderToDOM(ROOT_QUERY, this._block);
+			this._isRendered = true;
+		}
 		this._block.show();
 	}
 }
@@ -44,7 +49,7 @@ export class Router {
 	private routes: Route[];
 	private _currentRoute: Route | null;
 	private history: History;
-	static _instance: Router;
+	static _instance: Router | null;
 
 	constructor(defaultPath?: string) {
 		if (Router._instance) {
@@ -56,11 +61,15 @@ export class Router {
 		this._currentRoute = null;
 
 		window.addEventListener('popstate', (_event) => {
-			const state = this.history.state || {};
-			this._onRoute(state.path || '/');
+			const state = this.history.state as Record<string, any> || {};
+			this._onRoute(state.path as string || '/');
 		});
 
 		Router._instance = this;
+	}
+
+	destroyInstance(): void {
+		Router._instance = null;
 	}
 
 	setDefaultPath(defaultPath: string): Router {
@@ -95,8 +104,7 @@ export class Router {
 
 	go(pathname: string): void {
 		const targetPath = pathname === '/' ? this._defaultPath : pathname;
-		console.log('targetPath', targetPath);
-		history.pushState({ path: targetPath }, '', targetPath);
+		this.history.pushState({ path: targetPath }, '', targetPath);
 		this._onRoute(targetPath);
 	}
 

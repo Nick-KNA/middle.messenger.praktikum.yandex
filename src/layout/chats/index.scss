@@ -56,6 +56,18 @@
     flex: 1 1 auto;
     overflow-y: auto;
   }
+
+  &__new-chat {
+    flex: 0 0 35px;
+    padding: 10px;
+
+    &__add {
+      width: 100%;
+      background-color: $main-color;
+      color: white;
+      padding: 10px;
+    }
+  }
 }
 
 .chat-area {

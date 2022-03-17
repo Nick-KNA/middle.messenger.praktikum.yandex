@@ -30,7 +30,7 @@ const profilePage = new ProfilePage({
 			component: constructNavigateButton,
 			listeners: [],
 			props: {
-				targetPath: 'chats'
+				targetPath: '/chats'
 			}
 		},
 		profile: {
@@ -43,7 +43,7 @@ const profilePage = new ProfilePage({
 						component: constructProfileField,
 						listeners: Profile.getInputListeners(),
 						props: {
-							value: 'sample@yandex.ru',
+							value: '',
 							labelText: 'Почта',
 							name: 'email',
 							placeholder: 'Укажите email',
@@ -56,7 +56,7 @@ const profilePage = new ProfilePage({
 						component: constructProfileField,
 						listeners: Profile.getInputListeners(),
 						props: {
-							value: 'ivanivanov',
+							value: '',
 							labelText: 'Логин',
 							name: 'login',
 							placeholder: 'Укажите логин',
@@ -69,7 +69,7 @@ const profilePage = new ProfilePage({
 						component: constructProfileField,
 						listeners: Profile.getInputListeners(),
 						props: {
-							value: 'Иван',
+							value: '',
 							labelText: 'Имя',
 							name: 'first_name',
 							placeholder: 'Укажите имя',
@@ -82,7 +82,7 @@ const profilePage = new ProfilePage({
 						component: constructProfileField,
 						listeners: Profile.getInputListeners(),
 						props: {
-							value: 'Иванов',
+							value: '',
 							labelText: 'Фамилия',
 							name: 'second_name',
 							placeholder: 'Укажите фамилию',
@@ -91,13 +91,13 @@ const profilePage = new ProfilePage({
 							disabled: true
 						}
 					},
-					nickname: {
+					display_name: {
 						component: constructProfileField,
 						listeners: Profile.getInputListeners(),
 						props: {
-							value: 'Иван',
+							value: '',
 							labelText: 'Имя в чате',
-							name: 'nickname',
+							name: 'display_name',
 							placeholder: 'Укажите никнейм',
 							error: '',
 							type: 'text',
@@ -108,7 +108,7 @@ const profilePage = new ProfilePage({
 						component: constructProfileField,
 						listeners: Profile.getInputListeners(),
 						props: {
-							value: '+79993334422',
+							value: '',
 							labelText: 'Телефон',
 							name: 'phone',
 							placeholder: 'Укажите телефон',

@@ -1,3 +1,5 @@
+import { Router } from "../utils/router"
+
 export enum METHODS {
 	GET = "GET",
 	POST = "POST",
@@ -23,6 +25,7 @@ const DEFAULT_REQUEST_TIMEOUT = 5000;
 
 class FetchService {
 	private baseUrl: string;
+	private router: Router;
 	constructor(baseUrl: string) {
 		this.baseUrl = baseUrl;
 	}
@@ -39,14 +42,14 @@ class FetchService {
 	post<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
-			{ ...options, method: METHODS.POST },
+			{ ...options, method: METHODS.POST, headers: { ...options.headers, 'Content-Type': 'application/json' } },
 			this.deriveTimeout(options)
 		);
 	}
 	put<T>(url: string, options: TMethodOptions<T> = {}) {
 		return this.request(
 			url,
-			{ ...options, method: METHODS.PUT },
+			{ ...options, method: METHODS.PUT, headers: { ...options.headers, 'Content-Type': 'application/json' } },
 			this.deriveTimeout(options)
 		);
 	}
@@ -67,9 +70,8 @@ class FetchService {
 	}
 	deserializeData<T>(jsonString: string): T | null {
 		try {
-			return JSON.parse(jsonString);
+			return JSON.parse(jsonString) as T;
 		} catch (err) {
-			console.error('Failed to deserialize data for request, got error', err);
 			return null;
 		}
 	}
@@ -87,8 +89,17 @@ class FetchService {
 			headers && Object.keys(headers).forEach((header) => {
 				xhr.setRequestHeader(header, headers[header]);
 			});
+			xhr.withCredentials = true;
 
-			xhr.onload = function() {
+			xhr.onload = () => {
+				if (xhr.status === 401 || xhr.status === 403) {
+					if (!this.router) {
+						this.router = new Router();
+					}
+					setTimeout(() => {
+						this.router.go('/login');
+					}, 300);
+				}
 				resolve({
 					status: xhr.status === 200,
 					data: self.deserializeData(xhr.response),

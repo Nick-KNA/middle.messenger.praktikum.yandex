@@ -1,8 +1,5 @@
 import Block, { TCallback } from "../../components/block/block"
-import { compile } from "pug"
-import { Router } from "../../utils/router"
-
-const router = new Router();
+import { compile } from "pug";
 
 const pugString = `
 h1.title 500
@@ -34,7 +31,7 @@ class ErrorPage extends Block {
     }
     onBackToChatsClick(event: Event): void {
         event.preventDefault();
-        router.go('/chats');
+        this.router.go('/chats');
     }
 }
 

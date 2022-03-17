@@ -22,7 +22,7 @@ const profileEditPage = new ProfilePage({
 						component: constructProfileField,
 						listeners: ProfileEdit.getInputListeners(),
 						props: {
-							value: 'sample@yandex.ru',
+							value: '',
 							labelText: 'Почта',
 							name: 'email',
 							placeholder: 'Укажите email',
@@ -35,7 +35,7 @@ const profileEditPage = new ProfilePage({
 						component: constructProfileField,
 						listeners: ProfileEdit.getInputListeners(),
 						props: {
-							value: 'ivanivanov',
+							value: '',
 							labelText: 'Логин',
 							name: 'login',
 							placeholder: 'Укажите логин',
@@ -48,7 +48,7 @@ const profileEditPage = new ProfilePage({
 						component: constructProfileField,
 						listeners: ProfileEdit.getInputListeners(),
 						props: {
-							value: 'Иван',
+							value: '',
 							labelText: 'Имя',
 							name: 'first_name',
 							placeholder: 'Укажите имя',
@@ -61,7 +61,7 @@ const profileEditPage = new ProfilePage({
 						component: constructProfileField,
 						listeners: ProfileEdit.getInputListeners(),
 						props: {
-							value: 'Иванов',
+							value: '',
 							labelText: 'Фамилия',
 							name: 'second_name',
 							placeholder: 'Укажите фамилию',
@@ -70,13 +70,13 @@ const profileEditPage = new ProfilePage({
 							disabled: false
 						}
 					},
-					nickname: {
+					display_name: {
 						component: constructProfileField,
 						listeners: ProfileEdit.getInputListeners(),
 						props: {
-							value: 'Иван',
+							value: '',
 							labelText: 'Имя в чате',
-							name: 'nickname',
+							name: 'display_name',
 							placeholder: 'Укажите никнейм',
 							error: '',
 							type: 'text',
@@ -87,7 +87,7 @@ const profileEditPage = new ProfilePage({
 						component: constructProfileField,
 						listeners: ProfileEdit.getInputListeners(),
 						props: {
-							value: '+79993334422',
+							value: '',
 							labelText: 'Телефон',
 							name: 'phone',
 							placeholder: 'Укажите телефон',
