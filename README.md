@@ -13,6 +13,10 @@
 
 ### Deployment
 
+1. `heroku container:login`
+2. `heroku container:push web`
+3. `heroku container:release web`
+
 ### Дополнительные ссылки
 [Макеты Figma](https://www.figma.com/file/7FNaRypKxISxhvGz5WVVUV/Chat-App?node-id=0%3A1)
 
