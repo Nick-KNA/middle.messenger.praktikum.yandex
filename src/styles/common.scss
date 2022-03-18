@@ -70,7 +70,7 @@ ul {
   &::placeholder {
     color: $text-secondary-color;
     font-size: 9px;
-    opacity: 50%;
+    opacity: 0.5;
   }
 }
 
@@ -94,7 +94,7 @@ ul {
   }
 
   &:hover {
-    opacity: 80%;
+    opacity: 0.8;
   }
 }
 
