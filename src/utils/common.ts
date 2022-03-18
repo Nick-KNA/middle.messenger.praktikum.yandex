@@ -39,20 +39,20 @@ export const parseDateTime = (dateString: string): string => {
 	return dateTimeToString(date);
 }
 
-export const set = (object: Record<string, any>, path: string, value: unknown): Record<string, any> => {
-	if (typeof object !== 'object' || Array.isArray(object)) {
-		return object;
+export const set = (obj: Record<string, any>, path: string, value: unknown): Record<string, any> => {
+	if (typeof obj !== 'object' || Array.isArray(obj)) {
+		return obj as Record<string, any>;
 	}
 
 	const pathParts = path.split('.');
 	pathParts.reduce((acc, item, i) => {
 		if (i === (pathParts.length - 1)) {
 			acc[item] = value;
-			return object
+			return obj
 		}
 		acc[item] = {};
-		return acc[item];
-	}, object);
+		return acc[item] as Record<string, any>;
+	}, obj);
 
-	return object;
+	return obj;
 }

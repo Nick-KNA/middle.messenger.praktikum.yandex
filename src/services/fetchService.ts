@@ -77,7 +77,6 @@ class FetchService {
 	}
 	request<T, U>(url: string, options : TOptions<T> = { method: METHODS.GET }, timeout: number): Promise<TResponse<U | null>> {
 		const {method, headers, data} = options;
-		const self = this;
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			xhr.timeout = timeout;
@@ -102,7 +101,7 @@ class FetchService {
 				}
 				resolve({
 					status: xhr.status === 200,
-					data: self.deserializeData(xhr.response),
+					data: this.deserializeData(xhr.response),
 				});
 			};
 

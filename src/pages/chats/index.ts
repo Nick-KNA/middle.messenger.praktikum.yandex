@@ -87,7 +87,7 @@ class Chats extends Block {
         router.go('/profile');
     }
     componentWasShown() {
-        authService.me();
+        void authService.me();
     }
     onShowNewChatModal(): void {
         this.changeNewChatModalVisible(true);

@@ -17,7 +17,7 @@ class AuthService {
 		if (!this.router) {
 			this.router = new Router();
 		}
-	};
+	}
 	login(login: string, password: string): Promise<TResponse<any>> {
 		return fetchService.post('/auth/signin', {
 			data: {

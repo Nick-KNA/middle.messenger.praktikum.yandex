@@ -1,12 +1,14 @@
 import { Router } from "../utils/router";
 import loginForm from "./login/index";
 import registerForm from "./register/index";
-import chatsPage from "./chats/index"
-import notFoundPage from "./404/index"
-import errorPage from "./500/index"
-import profilePage from "./profile/index"
-import profileEditPage from "./profileEdit/index"
-import profilePasswordEdit from "./passwordEdit/index"
+import chatsPage from "./chats/index";
+import notFoundPage from "./404/index";
+import errorPage from "./500/index";
+import profilePage from "./profile/index";
+import profileEditPage from "./profileEdit/index";
+import profilePasswordEdit from "./passwordEdit/index";
+
+import './index.scss';
 
 const DEFAULT_PATH = '/chats';
 
