@@ -17,7 +17,8 @@
     "test": "./node_modules/.bin/mocha",
     "check": "npm run eslint && npm run stylelint && npm run test",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx src",
-    "stylelint": "stylelint ./**/*.scss"
+    "stylelint": "stylelint ./**/*.scss",
+    "precommit": "npm run check"
   },
   "repository": {
     "type": "git",
