@@ -8,7 +8,8 @@ module.exports = {
         extensions: ['.ts', '.js', '.pug'],
         fallback: {
             "fs": false,
-            "os": false
+            "os": false,
+            assert: require.resolve('assert')
         },
         alias: {
             process: "process/browser"
