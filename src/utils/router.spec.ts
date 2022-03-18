@@ -10,7 +10,7 @@ describe('Router tests', () => {
     before(() => {
         global.window = {
             history: new HistoryMock(),
-            addEventListener: (): void => {},
+            addEventListener: (): void => { return; },
             document: new DocumentMock()
         }
         router = new Router();
@@ -40,7 +40,8 @@ describe('Router tests', () => {
         router.go('/register');
         router.back();
 
-        expect(global.window.history.state.url).equal('/login');
+        const history = global.window.history as any as HistoryMock;
+        expect(history.state.url).equal('/login');
     });
 
     it('should navigate forward', () => {
@@ -48,6 +49,7 @@ describe('Router tests', () => {
         router.back();
         router.forward();
 
-        expect(global.window.history.state.url).equal('/register');
+        const history = global.window.history as any as HistoryMock;
+        expect(history.state.url).equal('/register');
     });
 })

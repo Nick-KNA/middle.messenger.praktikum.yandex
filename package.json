@@ -9,13 +9,16 @@
     }
   },
   "scripts": {
-    "dev": "parcel --no-cache ./src/pages/index.pug",
-    "build": "parcel build --no-cache ./src/pages/index.pug",
+    "dev_old": "parcel --no-cache ./src/pages/index.pug",
+    "dev": "./node_modules/.bin/webpack serve --mode development",
+    "build": "./node_modules/.bin/webpack --mode=production",
+    "build_old": "parcel build --no-cache ./src/pages/index.pug",
     "start": "npm run build && node ./server.js",
     "test": "./node_modules/.bin/mocha",
-    "check": "npm run eslint && npm run stylelint",
+    "check": "npm run eslint && npm run stylelint && npm run test",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx src",
-    "stylelint": "stylelint ./**/*.scss"
+    "stylelint": "stylelint ./**/*.scss",
+    "precommit": "npm run check"
   },
   "repository": {
     "type": "git",
@@ -45,6 +48,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
     "chai": "^4.3.6",
+    "css-loader": "^6.7.1",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-import": "^2.22.1",
@@ -52,21 +56,28 @@
     "eslint-plugin-optimize-regex": "^1.2.0",
     "eslint-plugin-prettier": "^3.3.1",
     "express": "^4.17.2",
+    "html-webpack-plugin": "^5.5.0",
+    "husky": "^4.3.8",
     "mocha": "^9.2.2",
     "parcel": "^2.1.1",
     "prettier": "^2.2.1",
+    "process": "^0.11.10",
     "pug": "^3.0.2",
-    "stylelint": "^14.0.1",
-    "stylelint-config-prettier": "^9.0.3",
-    "stylelint-config-rational-order": "^0.1.2",
-    "stylelint-config-standard": "^23.0.0",
-    "stylelint-config-standard-scss": "^2.0.0",
-    "stylelint-order": "^5.0.0",
-    "stylelint-prettier": "^1.2.0",
-    "stylelint-scss": "^4.0.0",
-    "typescript": "^4.5.5"
+    "pug-loader": "^2.4.0",
+    "sass-loader": "^12.6.0",
+    "style-loader": "^3.3.1",
+    "stylelint": "^14.6.0",
+    "stylelint-config-standard-scss": "^3.0.0",
+    "stylelint-scss": "^4.2.0",
+    "ts-loader": "^9.2.8",
+    "typescript": "^4.5.5",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "assert": "^2.0.0",
+    "path": "^0.12.7",
     "sass": "^1.47.0",
     "uuid": "^8.3.2"
   },
@@ -75,5 +86,10 @@
     "tabWidth": 4,
     "semi": false,
     "singleQuote": false
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run check"
+    }
   }
 }

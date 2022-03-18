@@ -1,19 +1,16 @@
-@import '../styles/common';
-
-@import './register/index';
-@import './login/index';
-@import './chats/index';
-@import './404/index';
-@import './500/index';
-@import './profile/index';
-@import './profileEdit/index';
-
-@import '../layout/chats/index';
-@import '../layout/profile/index';
-
-@import '../components/formInput/formInput';
-@import '../components/chat/chat';
-@import '../components/chatList/chatList';
-@import '../components/newMessage/newMessage';
-@import '../components/profileField/profileField';
-@import '../components/navigateButton/navigateButton';
+@import "../styles/common";
+@import "./register/index";
+@import "./login/index";
+@import "./chats/index";
+@import "./404/index";
+@import "./500/index";
+@import "./profile/index";
+@import "./profileEdit/index";
+@import "../layout/chats/index";
+@import "../layout/profile/index";
+@import "../components/formInput/formInput";
+@import "../components/chat/chat";
+@import "../components/chatList/chatList";
+@import "../components/newMessage/newMessage";
+@import "../components/profileField/profileField";
+@import "../components/navigateButton/navigateButton";

@@ -1,6 +1,19 @@
 @import "../../styles/variables";
 
 .chat-list {
+  &_empty {
+    & > span {
+      margin-top: 4px;
+      margin-left: 10px;
+      display: inline-block;
+      font-size: 13px;
+      line-height: 13px;
+      color: $text-secondary-color;
+      max-height: 26px;
+      overflow: hidden;
+    }
+  }
+
   &__chats {
     &__item {
       padding: 12px 10px;
@@ -72,19 +85,6 @@
           }
         }
       }
-    }
-  }
-
-  &_empty {
-    & > span {
-      margin-top: 4px;
-      margin-left: 10px;
-      display: inline-block;
-      font-size: 13px;
-      line-height: 13px;
-      color: $text-secondary-color;
-      max-height: 26px;
-      overflow: hidden;
     }
   }
 }

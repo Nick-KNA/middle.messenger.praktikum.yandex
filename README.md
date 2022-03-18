@@ -3,7 +3,7 @@
 ### Приложение ChatApp (Учебный проект Яндекс.Практикум)
 Веб приложение для общения
 
-### Deployment
+### Scripts
 
 1. `npm run dev` - локальное развертывание приложения
 2. `npm run build` - сборка билда для деплоя приложения
@@ -11,7 +11,15 @@
 4. `npm run check` -  проверки ESLint и styleLint
 5. `npm run test` -  запуск тестов
 
+### Deployment
+
+1. `heroku container:login`
+2. `heroku container:push web`
+3. `heroku container:release web`
+
 ### Дополнительные ссылки
 [Макеты Figma](https://www.figma.com/file/7FNaRypKxISxhvGz5WVVUV/Chat-App?node-id=0%3A1)
 
-[Демо приложения](https://kind-payne-fbf39f.netlify.app/)
+[Демо приложения (Netlify)](https://kind-payne-fbf39f.netlify.app/)
+
+[Демо приложения (Heroku)](https://ya-chat-app-kna.herokuapp.com/)
